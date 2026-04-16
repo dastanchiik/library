@@ -26,8 +26,9 @@ public class AuthService {
     }
 
     public JWTResponse registerUser(UserRegisterRequest userRegisterRequest) {
-        User user = new User(userRegisterRequest.getEmail());
-        user.setUsername( userRegisterRequest.getFullName() );
+        User user = new User();
+        user.setUsername( userRegisterRequest.getUsername() );
+        user.setFullName( userRegisterRequest.getFullName() );
         user.setEmail( userRegisterRequest.getEmail() );
         user.setRole( Role.ROLE_USER);
         user.setPassword(passwordEncoder.encode(userRegisterRequest.getPassword()));
@@ -41,7 +42,7 @@ public class AuthService {
         return new JWTResponse(
                 savedUser.getEmail(),
                 token,
-                "Dastan",
+                "successfully registered",
                 savedUser.getRole()
 
         );

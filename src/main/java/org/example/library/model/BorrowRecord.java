@@ -8,6 +8,11 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "borrow_records")
 @Builder
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@ToString
 public class BorrowRecord {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,61 +26,19 @@ public class BorrowRecord {
     @JoinColumn(name = "book_id", nullable = false)
     private Book book;
 
+    @Column(name = "last_read_page")
+    private Integer lastReadPage = 0;
+
+    @Column(name = "is_purchased")
+    private boolean isPurchased;
+
+    @Column(name = "total_points_earned")
+    private Integer totalPointsEarned = 0;
+
+    @Column(name = "is_completed")
+    private boolean isCompleted;
+
     private LocalDateTime borrowDate;
     private LocalDateTime returnDate;
 
-
-
-    public BorrowRecord(Long id, User user, Book book, LocalDateTime borrowDate, LocalDateTime returnDate) {
-        this.id = id;
-        this.user = user;
-        this.book = book;
-        this.borrowDate = borrowDate;
-        this.returnDate = returnDate;
-    }
-
-    public BorrowRecord() {
-    }
-
-
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public Book getBook() {
-        return book;
-    }
-
-    public void setBook(Book book) {
-        this.book = book;
-    }
-
-    public LocalDateTime getBorrowDate() {
-        return borrowDate;
-    }
-
-    public void setBorrowDate(LocalDateTime borrowDate) {
-        this.borrowDate = borrowDate;
-    }
-
-    public LocalDateTime getReturnDate() {
-        return returnDate;
-    }
-
-    public void setReturnDate(LocalDateTime returnDate) {
-        this.returnDate = returnDate;
-    }
 }
