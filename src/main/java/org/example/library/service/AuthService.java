@@ -1,6 +1,5 @@
 package org.example.library.service;
 
-import lombok.RequiredArgsConstructor;
 import org.example.library.config.jwt.JwtUtils;
 import org.example.library.dto.request.LoginRequest;
 import org.example.library.dto.request.UserRegisterRequest;
@@ -30,7 +29,7 @@ public class AuthService {
         user.setUsername( userRegisterRequest.getUsername() );
         user.setFullName( userRegisterRequest.getFullName() );
         user.setEmail( userRegisterRequest.getEmail() );
-        user.setRole( Role.ROLE_USER);
+        user.setRole( Role.USER);
         user.setPassword(passwordEncoder.encode(userRegisterRequest.getPassword()));
 
         if (repository.existsByEmail(userRegisterRequest.getEmail()))

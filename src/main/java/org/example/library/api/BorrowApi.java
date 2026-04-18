@@ -1,8 +1,8 @@
 package org.example.library.api;
 
 import lombok.RequiredArgsConstructor;
-import org.example.library.model.BorrowRecord;
-import org.example.library.service.BorrowService;
+import org.example.library.model.Order;
+import org.example.library.service.OrderService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class BorrowApi {
 
-    private final BorrowService borrowService;
+    private final OrderService orderService;
 
     // Купить книгу или взять почитать
     @PostMapping("/buy")
@@ -19,7 +19,7 @@ public class BorrowApi {
         try {
             // В реальном проекте мы бы брали User из SecurityContext, 
             // но для ярмарки и тестов передаем userId параметром
-            BorrowRecord record = borrowService.buyOrReadBook(userId, bookId);
+            Order record = orderService.buyOrReadBook(userId, bookId);
             return ResponseEntity.ok(record);
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -30,7 +30,7 @@ public class BorrowApi {
     @PatchMapping("/progress")
     public ResponseEntity<?> updateProgress(@RequestParam Long recordId, @RequestParam int pages) {
         try {
-            borrowService.updateProgress(recordId, pages);
+            orderService.updateProgress(recordId, pages);
             return ResponseEntity.ok("Прогресс обновлен, баллы зачислены!");
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());

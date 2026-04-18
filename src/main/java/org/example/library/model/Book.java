@@ -22,8 +22,16 @@ public class Book {
     @Column(nullable = false)
     private String author;
 
-    @Column(unique = true)
+    private String category;
+
     private String isbn;
+    @Column(length = 1000)
+    private String description;
+
+    private String imageURL;
+
+    @Column(nullable = false)
+    private int stock;
 
     @Column(nullable = false)
     private int price = 0;

@@ -5,7 +5,6 @@ import lombok.Getter;
 import lombok.Setter;
 import org.example.library.model.Role;
 
-
 public class JWTResponse {
     private String email;
     private String token;
