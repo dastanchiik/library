@@ -1,8 +1,10 @@
 package org.example.library.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -18,18 +20,21 @@ public class User {
 
     private String fullName;
 
-    @Column(unique = true)
+//    @Column(unique = true)
     private String username;
 
-    @Column(unique = true)
+//    @Column(unique = true)
     private String email;
 
     private String password;
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @JsonBackReference
     private List<Order> orders;
+
+    private LocalDateTime createdAt = LocalDateTime.now();
 
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    private int balance = 0;
+    private double balance = 0;
 }

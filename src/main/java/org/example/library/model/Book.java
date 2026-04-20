@@ -22,7 +22,8 @@ public class Book {
     @Column(nullable = false)
     private String author;
 
-    private String category;
+    @Enumerated(EnumType.STRING)
+    private Category category;
 
     private String isbn;
     @Column(length = 1000)
@@ -34,7 +35,7 @@ public class Book {
     private int stock;
 
     @Column(nullable = false)
-    private int price = 0;
+    private double price = 0;
 
 
 

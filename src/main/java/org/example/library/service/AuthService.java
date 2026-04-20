@@ -26,15 +26,18 @@ public class AuthService {
 
     public JWTResponse registerUser(UserRegisterRequest userRegisterRequest) {
         User user = new User();
-        user.setUsername( userRegisterRequest.getUsername() );
-        user.setFullName( userRegisterRequest.getFullName() );
-        user.setEmail( userRegisterRequest.getEmail() );
-        user.setRole( Role.USER);
+        user.setUsername(userRegisterRequest.getUsername());
+        user.setFullName(userRegisterRequest.getFullName());
+        user.setEmail(userRegisterRequest.getEmail());
+        user.setRole(Role.USER);
         user.setPassword(passwordEncoder.encode(userRegisterRequest.getPassword()));
 
-        if (repository.existsByEmail(userRegisterRequest.getEmail()))
+        if (repository.existsByEmail(userRegisterRequest.getEmail())) {
             throw new RuntimeException("The email " + userRegisterRequest.getEmail() + " is already in use!");
-
+        }
+        if (repository.existsByUsername(userRegisterRequest.getUsername())) {
+            throw new RuntimeException("The username " + userRegisterRequest.getUsername() + " is already in use!");
+        }
         User savedUser = repository.save(user);
         String token = jwtUtils.generateToken(userRegisterRequest.getEmail());
 

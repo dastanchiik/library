@@ -1,14 +1,14 @@
 package org.example.library.api;
 
 import lombok.RequiredArgsConstructor;
+import org.example.library.dto.response.UserResponse;
 import org.example.library.model.User;
 import org.example.library.repositories.UserRepository;
 import org.example.library.service.UserService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController("/api/user")
 @RequiredArgsConstructor
@@ -24,4 +24,20 @@ public class UserApi {
         userRepository.save(user);
         return ResponseEntity.ok("Баланс пополнен на " + amount);
     }
+
+    @GetMapping("/users")
+    public List<User> getAllUsers() {
+        return userService.getAll();
+    }
+
+    @GetMapping("/search/user")
+    public List<User> searchUser(@RequestParam String query) {
+        return userService.searchByUsernameOrFullName(query);
+    }
+
+    @GetMapping("/profile")
+    public ResponseEntity<UserResponse> getUserProfile(@RequestParam Long id) {
+        return ResponseEntity.ok(userService.getProfile(id));
+    }
+
 }

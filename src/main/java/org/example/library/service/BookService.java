@@ -1,18 +1,14 @@
 package org.example.library.service;
 
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.example.library.dto.request.BookRequest;
-import org.example.library.model.Book;
-import org.example.library.model.Order;
-import org.example.library.model.OrderStatus;
-import org.example.library.model.User;
+import org.example.library.dto.response.BookResponse;
+import org.example.library.model.*;
 import org.example.library.repositories.BookRepository;
 import org.example.library.repositories.OrderRepository;
 import org.example.library.repositories.UserRepository;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Random;
 
@@ -24,44 +20,11 @@ public class BookService {
     private final UserRepository userRepository;
     private final OrderRepository orderRepository;
 
-    public List<Book> getAllBooks() {
-        return bookRepository.findAll();
-    }
-
-    @Transactional
-    public String buyBook(Long userId, Long bookId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("Пользователь не найден"));
-        Book book = bookRepository.findById(bookId)
-                .orElseThrow(() -> new RuntimeException("Книга не найдена"));
-
-        // 1. Проверка на наличие (Stock)
-        if (book.getStock() <= 0) {
-            throw new RuntimeException("Брат, книги закончились на складе!");
-        }
-
-        // 2. Проверка баланса
-        if (user.getBalance() < book.getPrice()) {
-            throw new RuntimeException("Брат, не хватает баллов!");
-        }
-
-        // 3. Логика сделки
-        user.setBalance(user.getBalance() - book.getPrice());
-        book.setStock(book.getStock() - 1); // Уменьшаем остаток
-
-        Order order = Order.builder()
-                .user(user)
-                .book(book)
-                .orderDate(LocalDateTime.now())
-                .status(OrderStatus.PAID) // Сразу ставим статус PAID (Оплачено)
-                .totalPrice(book.getPrice())
-                .build();
-
-        orderRepository.save(order);
-        bookRepository.save(book);
-        userRepository.save(user);
-
-        return "ORDER_CREATED_AND_PAID";
+    public List<BookResponse> getAllBooks() {
+        return bookRepository.findAll()
+                .stream()
+                .map(BookResponse::fromEntity) // Превращаем каждую книгу в Response
+                .toList();
     }
 
     // Твой генератор ISBN - отличная фишка!
@@ -89,6 +52,9 @@ public class BookService {
         book.setTitle(bookRequest.getTitle());
         book.setAuthor(bookRequest.getAuthor());
         book.setPrice(bookRequest.getPrice());
+        book.setCategory(bookRequest.getCategory());
+        book.setImageURL(bookRequest.getImageUrl());
+        book.setDescription(bookRequest.getDescription());
         book.setStock(bookRequest.getStock()); // Не забудь добавить в BookRequest поле stock
         book.setIsbn(isbn);
 
@@ -96,12 +62,15 @@ public class BookService {
     }
 
     public String updateBook(Long id, BookRequest bookRequest) {
-        Book bookToUpdate = getBookById(id);
-        bookToUpdate.setTitle(bookRequest.getTitle());
-        bookToUpdate.setAuthor(bookRequest.getAuthor());
-        bookToUpdate.setPrice(bookRequest.getPrice()); // Обновляем и цену
-        bookToUpdate.setStock(bookRequest.getStock()); // И наличие
-        bookRepository.save(bookToUpdate);
+        Book book = getBookById(id);
+        book.setTitle(bookRequest.getTitle());
+        book.setAuthor(bookRequest.getAuthor());
+        book.setPrice(bookRequest.getPrice());
+        book.setCategory(bookRequest.getCategory());
+        book.setImageURL(bookRequest.getImageUrl());
+        book.setDescription(bookRequest.getDescription());
+        book.setStock(bookRequest.getStock()); // И наличие
+        bookRepository.save(book);
         return "Book updated";
     }
 
@@ -113,4 +82,16 @@ public class BookService {
         return bookRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Книга не найдена"));
     }
+
+    public List<Book> searchBooks(String title){
+        return bookRepository.findByTitleContainingIgnoreCase(title);
+    }
+
+    public List<BookResponse> searchBooksByCategory(Category category){
+        return bookRepository.findAllByCategory(category)
+                .stream()
+                .map(BookResponse::fromEntity) // Превращаем каждую книгу в Response
+                .toList();
+    }
 }
+
