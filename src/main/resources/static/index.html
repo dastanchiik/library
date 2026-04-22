@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BookCloud — Главная</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 font-sans">
+
+<nav class="bg-blue-600 p-4 text-white shadow-lg sticky top-0 z-50">
+    <div class="container mx-auto flex justify-between items-center">
+        <h1 class="text-2xl font-bold cursor-pointer" onclick="location.href='index.html'">📚 BookCloud</h1>
+
+        <div class="flex items-center gap-6">
+            <div class="text-right">
+                <p class="text-xs text-blue-200">Мой баланс</p>
+                <p id="nav-balance" class="font-bold text-white">Загрузка...</p>
+            </div>
+            <button onclick="location.href='profile.html'" class="group flex items-center gap-2 bg-blue-500 px-3 py-2 rounded-lg hover:bg-blue-400 transition">
+                <div class="w-8 h-8 bg-white text-blue-600 rounded-full flex items-center justify-center font-bold">
+                    <span id="nav-initials">U</span>
+                </div>
+                <span class="text-sm font-medium">Профиль</span>
+            </button>
+        </div>
+    </div>
+</nav>
+
+<main class="container mx-auto py-10 px-4">
+    <div class="flex justify-between items-center mb-8">
+        <h2 class="text-3xl font-extrabold text-gray-800">Каталог книг</h2>
+        <div class="bg-white px-4 py-2 rounded-full shadow-sm text-sm text-gray-500">
+            Всего книг: <span id="book-count" class="font-bold text-blue-600">0</span>
+        </div>
+    </div>
+
+    <div id="book-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+    </div>
+</main>
+
+<script>
+    const USER_ID = localStorage.getItem('userId');
+    const token = localStorage.getItem('token');
+
+    if (!USER_ID || !token) {
+        location.href = 'welcome.html';
+    }
+
+    async function loadPageData() {
+        try {
+            // 1. Загрузка данных профиля
+            const userRes = await fetch(`/api/user/profile?id=${USER_ID}`, {
+                headers: { 'Authorization': 'Bearer ' + token }
+            });
+            if (userRes.ok) {
+                const user = await userRes.json();
+                document.getElementById('nav-balance').innerText = `${user.balance || 0} сом`;
+                if (user.fullName) document.getElementById('nav-initials').innerText = user.fullName.charAt(0).toUpperCase();
+            }
+
+            // 2. Загрузка книг (твой верный эндпоинт!)
+            const bookRes = await fetch('/api/book/books');
+
+            if (!bookRes.ok) {
+                console.error("Ошибка при запросе книг:", bookRes.status);
+                return;
+            }
+
+            const books = await bookRes.json();
+            document.getElementById('book-count').innerText = books.length;
+            const bookList = document.getElementById('book-list');
+
+            if (bookList) {
+                bookList.innerHTML = '';
+
+                if (books.length === 0) {
+                    bookList.innerHTML = '<div class="col-span-full text-center py-10 text-gray-500 italic">База данных пуста. Добавьте книгу в Swagger!</div>';
+                    return;
+                }
+
+                books.forEach(book => {
+                    const card = `
+        <div onclick="location.href='book-details.html?id=${book.id}'"
+             class="bg-white rounded-3xl shadow-sm border border-gray-200 overflow-hidden flex flex-col cursor-pointer hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 group">
+            <div class="p-6 flex-grow">
+                <span class="bg-blue-50 text-blue-600 text-[10px] font-black px-3 py-1 rounded-full uppercase">
+                    ${book.category || 'Книга'}
+                </span>
+                <h3 class="text-xl font-bold mt-4 group-hover:text-blue-600 transition-colors">${book.title || 'Без названия'}</h3>
+                <p class="text-gray-400 text-sm">${book.author || 'Автор неизвестен'}</p>
+            </div>
+            <div class="p-6 bg-gray-50 flex justify-between items-center">
+                <span class="text-2xl font-black text-blue-600">${book.price || 0} сом</span>
+                <div class="bg-blue-600 text-white p-2 rounded-xl group-hover:bg-blue-700 transition">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                    </svg>
+                </div>
+            </div>
+        </div>`;
+                    bookList.insertAdjacentHTML('beforeend', card);
+                });
+            }
+
+        } catch (err) {
+            console.error("Ошибка:", err);
+        }
+    }
+
+    // ТА САМАЯ ФУНКЦИЯ КУПИТЬ — ДОБАВЬ ЕЁ СЮДА
+    async function buyBook(bookId) {
+        if (!confirm("Вы уверены, что хотите купить эту книгу?")) return;
+
+        try {
+            // Твой эндпоинт /api/order/buy из OrderApi
+            const url = `/api/order/buy?userId=${USER_ID}&bookId=${bookId}`;
+
+            const res = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Authorization': 'Bearer ' + token
+                }
+            });
+
+            if (res.ok) {
+                alert("Книга успешно куплена!");
+                loadPageData(); // Обновляем баланс и список, если нужно
+            } else {
+                // Если в сервисе кидается исключение, оно придет сюда
+                const errorData = await res.json();
+                alert("Ошибка: " + (errorData.message || "Не удалось совершить покупку"));
+            }
+        } catch (err) {
+            console.error(err);
+            alert("Ошибка при отправке запроса на покупку");
+        }
+    }
+
+    // Запускаем загрузку при старте страницы
+    loadPageData();
+</script>
+</body>
+</html>

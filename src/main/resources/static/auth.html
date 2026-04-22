@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Вход в BookCloud</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-blue-600 h-screen flex items-center justify-center p-4">
+
+<div class="bg-white w-full max-w-md rounded-3xl shadow-2xl overflow-hidden">
+  <div class="flex border-b">
+    <button id="loginTab" onclick="switchTab('login')" class="w-1/2 py-4 font-bold text-blue-600 border-b-2 border-blue-600 transition">Вход</button>
+    <button id="registerTab" onclick="switchTab('register')" class="w-1/2 py-4 font-bold text-gray-400 hover:text-blue-600 transition">Регистрация</button>
+  </div>
+
+  <div class="p-8">
+    <h2 id="formTitle" class="text-2xl font-black text-gray-800 mb-6 text-center">С возвращением!</h2>
+
+    <form id="authForm" onsubmit="handleAuth(event)" class="space-y-4">
+      <div id="registerFields" class="hidden space-y-4">
+        <input type="text" id="fullName" placeholder="Полное имя" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition">
+        <input type="email" id="email" placeholder="Email" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition">
+      </div>
+
+      <input type="text" id="username" placeholder="Логин (Username)" required class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition">
+      <input type="password" id="password" placeholder="Пароль" required class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition">
+
+      <button type="submit" id="submitBtn" class="w-full bg-blue-600 text-white py-4 rounded-xl font-bold text-lg hover:bg-blue-700 active:scale-95 transition-all shadow-lg shadow-blue-100 mt-6">
+        Войти
+      </button>
+    </form>
+
+    <p class="text-center text-gray-400 text-sm mt-6">
+      Нажимая "Продолжить", вы соглашаетесь с правилами библиотеки.
+    </p>
+  </div>
+</div>
+
+<script>
+  let currentMode = 'login';
+
+  function switchTab(mode) {
+    currentMode = mode;
+    const regFields = document.getElementById('registerFields');
+    const submitBtn = document.getElementById('submitBtn');
+    const formTitle = document.getElementById('formTitle');
+    const loginTab = document.getElementById('loginTab');
+    const registerTab = document.getElementById('registerTab');
+
+    if (mode === 'register') {
+      regFields.classList.remove('hidden');
+      submitBtn.innerText = 'Создать аккаунт';
+      formTitle.innerText = 'Стань частью облака';
+      registerTab.classList.add('text-blue-600', 'border-b-2', 'border-blue-600');
+      loginTab.classList.remove('text-blue-600', 'border-b-2', 'border-blue-600');
+      loginTab.classList.add('text-gray-400');
+    } else {
+      regFields.classList.add('hidden');
+      submitBtn.innerText = 'Войти';
+      formTitle.innerText = 'С возвращением!';
+      loginTab.classList.add('text-blue-600', 'border-b-2', 'border-blue-600');
+      registerTab.classList.remove('text-blue-600', 'border-b-2', 'border-blue-600');
+      registerTab.classList.add('text-gray-400');
+    }
+  }
+
+  async function handleAuth(event) {
+    event.preventDefault();
+
+    // Берем данные из полей
+    const identifier = document.getElementById('username').value; // Тут может быть и почта, и логин
+    const password = document.getElementById('password').value;
+
+    let url = currentMode === 'login' ? '/api/auth/login' : '/api/auth/register';
+
+    // Формируем объект ТАК, как его ждет твой LoginRequest в Java
+    let bodyData = {
+      email: identifier, // Твой бэкенд в LoginRequest скорее всего ждет поле "email"
+      password: password
+    };
+
+    if (currentMode === 'register') {
+      bodyData.fullName = document.getElementById('fullName').value;
+      bodyData.email = document.getElementById('email').value;
+      // Если в регистрации юзернейм и почта - разные поля, добавь:
+      bodyData.username = identifier;
+    }
+
+    try {
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(bodyData)
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        localStorage.setItem('token', data.token);
+        localStorage.setItem('userId', data.id); // Теперь ID точно сохранится
+
+        alert("Успешно!");
+        location.href = 'index.html';
+      } else {
+        // Выведи сообщение из бэкенда, чтобы понять, что не так
+        alert("Ошибка: " + (data.message || "Неверный логин или пароль"));
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Произошла ошибка при запросе");
+    }
+  }
+</script>
+</body>
+</html>

@@ -35,5 +35,5 @@ public class Order {
 
     private int quantity; // Количество (обычно 1, но вдруг купят 2)
 
-    private int totalPrice; // Сумма заказа на момент покупки
+    private Double totalPrice; // Сумма заказа на момент покупки
 }

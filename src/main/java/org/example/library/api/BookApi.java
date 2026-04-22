@@ -6,11 +6,13 @@ import org.example.library.dto.response.BookResponse;
 import org.example.library.model.Book;
 import org.example.library.model.Category;
 import org.example.library.service.BookService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RestController("/api/book")
+@RestController
+@RequestMapping("/api/book")
 @RequiredArgsConstructor
 public class BookApi {
     private final BookService bookService;
@@ -38,9 +40,9 @@ public class BookApi {
         return "successfully deleted";
     }
 
-    @GetMapping("/get/one/book")
-    public Book getBook(@RequestParam Long id) {
-        return bookService.getBookById(id);
+    @GetMapping("/{id}")
+    public ResponseEntity<BookResponse> getById(@PathVariable Long id) {
+        return ResponseEntity.ok(bookService.getBookById(id));
     }
 
     @GetMapping("/search/book/title")

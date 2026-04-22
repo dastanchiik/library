@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>О книге — BookCloud</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 font-sans">
+
+<nav class="bg-white border-b p-4 sticky top-0 z-50">
+    <div class="container mx-auto flex items-center gap-4">
+        <button onclick="history.back()" class="p-2 hover:bg-gray-100 rounded-full transition">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+        </button>
+        <h1 class="text-xl font-bold text-slate-800">Детали книги</h1>
+    </div>
+</nav>
+
+<main class="container mx-auto py-10 px-4 max-w-4xl">
+    <div id="loading" class="text-center py-20 text-gray-400">Загрузка информации...</div>
+
+    <div id="book-content" class="hidden grid grid-cols-1 md:grid-cols-2 gap-12 bg-white p-8 rounded-[40px] shadow-xl border border-slate-100">
+        <div class="aspect-[3/4] bg-slate-100 rounded-3xl flex items-center justify-center border-2 border-dashed border-slate-200">
+            <span class="text-6xl text-slate-300">📖</span>
+        </div>
+
+        <div class="flex flex-col">
+            <span id="book-category" class="text-blue-600 font-black text-xs uppercase tracking-widest bg-blue-50 px-4 py-2 rounded-full w-fit"></span>
+            <h1 id="book-title" class="text-4xl font-black text-slate-900 mt-6 leading-tight"></h1>
+            <p id="book-author" class="text-xl text-slate-400 mt-2"></p>
+
+            <div class="my-8 p-6 bg-slate-50 rounded-3xl">
+                <h2 class="text-sm font-bold text-slate-400 uppercase tracking-widest mb-3">Описание</h2>
+                <p id="book-description" class="text-slate-600 leading-relaxed italic"></p>
+            </div>
+
+            <div class="mt-auto pt-8 border-t border-slate-100 flex items-center justify-between">
+                <div>
+                    <p class="text-xs text-slate-400 uppercase font-bold tracking-widest">Цена</p>
+                    <p id="book-price" class="text-3xl font-black text-slate-900"></p>
+                </div>
+                <button id="buy-btn" class="bg-blue-600 text-white px-10 py-5 rounded-2xl font-bold text-lg hover:bg-blue-700 active:scale-95 transition shadow-xl shadow-blue-100">
+                    Купить книгу
+                </button>
+            </div>
+        </div>
+    </div>
+</main>
+
+<script>
+    const params = new URLSearchParams(window.location.search);
+    const bookId = params.get('id');
+    const token = localStorage.getItem('token');
+    const userId = localStorage.getItem('userId');
+
+    async function loadBookDetails() {
+        try {
+            // Замени на свой эндпоинт получения ОДНОЙ книги по ID
+            const res = await fetch(`/api/book/${bookId}`);
+            if (!res.ok) throw new Error("Книга не найдена");
+
+            const book = await res.json();
+
+            document.getElementById('loading').classList.add('hidden');
+            document.getElementById('book-content').classList.remove('hidden');
+
+            document.getElementById('book-title').innerText = book.title;
+            document.getElementById('book-author').innerText = book.author;
+            document.getElementById('book-category').innerText = book.category;
+            document.getElementById('book-description').innerText = book.description || "У этой книги пока нет детального описания.";
+            document.getElementById('book-price').innerText = `${book.price} сом`;
+
+            document.getElementById('buy-btn').onclick = () => buyBook(book.id);
+        } catch (err) {
+            document.getElementById('loading').innerText = "Ошибка: " + err.message;
+        }
+    }
+
+    async function buyBook(id) {
+        if (!confirm("Подтвердить покупку?")) return;
+
+        try {
+            const res = await fetch(`/api/order/buy?userId=${userId}&bookId=${id}`, {
+                method: 'POST',
+                headers: { 'Authorization': 'Bearer ' + token }
+            });
+
+            if (res.ok) {
+                alert("Успешно! Книга добавлена в вашу библиотеку.");
+                location.href = 'index.html';
+            } else {
+                const error = await res.text();
+                alert("Ошибка: " + error);
+            }
+        } catch (err) {
+            alert("Ошибка запроса");
+        }
+    }
+
+    if (bookId) loadBookDetails();
+</script>
+</body>
+</html>

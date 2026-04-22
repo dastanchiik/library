@@ -10,15 +10,16 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RestController("/api/user")
+@RestController
+@RequestMapping("/api/user")
 @RequiredArgsConstructor
 public class UserApi {
 
     private final UserService userService;
     private final UserRepository userRepository;
 
-    @PatchMapping("/{userId}/add-money")
-    public ResponseEntity<?> addMoney(@PathVariable Long userId, @RequestParam int amount) {
+    @PatchMapping("/add-money")
+    public ResponseEntity<?> addMoney(@RequestParam Long userId, @RequestParam int amount) {
         User user = userService.getById(userId).get();
         user.setBalance(user.getBalance() + amount);
         userRepository.save(user);
@@ -28,6 +29,12 @@ public class UserApi {
     @GetMapping("/users")
     public List<User> getAllUsers() {
         return userService.getAll();
+    }
+
+    @GetMapping("/by-email")
+    public ResponseEntity<UserResponse> getUserByEmail(@RequestParam String email) {
+        // В сервисе должен быть метод findByEmail
+        return ResponseEntity.ok(userService.getUserByEmail(email));
     }
 
     @GetMapping("/search/user")

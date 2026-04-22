@@ -62,7 +62,7 @@ public class BookService {
     }
 
     public String updateBook(Long id, BookRequest bookRequest) {
-        Book book = getBookById(id);
+        Book book = bookRepository.findById(id).orElse(null);
         book.setTitle(bookRequest.getTitle());
         book.setAuthor(bookRequest.getAuthor());
         book.setPrice(bookRequest.getPrice());
@@ -78,9 +78,10 @@ public class BookService {
         bookRepository.deleteById(id);
     }
 
-    public Book getBookById(Long id) {
-        return bookRepository.findById(id)
+    public BookResponse getBookById(Long id) {
+        Book book = bookRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Книга не найдена"));
+        return BookResponse.fromEntity(book);
     }
 
     public List<Book> searchBooks(String title){

@@ -8,12 +8,14 @@ import org.example.library.dto.request.LoginRequest;
 import org.example.library.dto.request.UserRegisterRequest;
 import org.example.library.dto.response.JWTResponse;
 import org.example.library.service.AuthService;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 
-@RestController("/api/auth")
+@RestController
+@RequestMapping("/api/auth")
 @RequiredArgsConstructor
 public class AuthApi {
 
@@ -29,6 +31,14 @@ public class AuthApi {
     @PermitAll
     public JWTResponse performLogin(@RequestBody LoginRequest loginResponse) {
         return authService.authenticate( loginResponse );
+    }
+    @PostMapping("admin/login") // путь будет /api/auth/login
+    public ResponseEntity<?> adminLogin(@RequestBody Map<String, String> loginData) {
+        String email = loginData.get("email");
+        String password = loginData.get("password");
+
+        // вызываешь сервис...
+        return ResponseEntity.ok(authService.loginAdmin(email, password));
     }
 
 }

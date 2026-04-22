@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - BookCloud</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+
+<div class="flex h-screen">
+    <div class="w-64 bg-gray-900 text-white flex flex-col">
+        <div class="p-6 border-b border-gray-700">
+            <h1 class="text-2xl font-black">📚 BookCloud</h1>
+            <p class="text-gray-400 text-sm">Admin Panel</p>
+        </div>
+
+        <nav class="flex-1 p-6 space-y-2">
+            <a href="admin-dashboard.html" class="block px-4 py-3 bg-blue-600 rounded-lg font-semibold">📊 Dashboard</a>
+            <a href="admin-users.html" class="block px-4 py-3 text-gray-300 hover:bg-gray-800 rounded-lg">👥 Пользователи</a>
+            <a href="admin-books.html" class="block px-4 py-3 text-gray-300 hover:bg-gray-800 rounded-lg">📖 Книги</a>
+            <a href="admin-orders.html" class="block px-4 py-3 text-gray-300 hover:bg-gray-800 rounded-lg">📋 Заказы</a>
+            <a href="admin-categories.html" class="block px-4 py-3 text-gray-300 hover:bg-gray-800 rounded-lg">🏷️ Категории</a>
+        </nav>
+
+        <div class="p-6 border-t border-gray-700 space-y-2">
+            <a href="admin-profile.html" class="block px-4 py-3 text-gray-300 hover:bg-gray-800 rounded-lg">⚙️ Профиль</a>
+            <button onclick="logout()" class="w-full px-4 py-3 bg-red-600 hover:bg-red-700 rounded-lg font-semibold">🚪 Выход</button>
+        </div>
+    </div>
+
+    <div class="flex-1 flex flex-col">
+        <div class="bg-white shadow p-6 flex justify-between items-center">
+            <h2 class="text-3xl font-bold text-gray-900">Dashboard</h2>
+            <div class="flex items-center gap-4">
+                <span class="text-gray-600" id="currentUser">Администратор</span>
+                <div class="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold">A</div>
+            </div>
+        </div>
+
+        <div class="flex-1 overflow-auto p-6">
+            <div class="grid grid-cols-4 gap-6 mb-8">
+                <div class="bg-white rounded-lg shadow p-6 border-b-4 border-blue-500">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-600 text-sm">Всего пользователей</p>
+                            <p class="text-3xl font-bold text-gray-900" id="totalUsers">0</p>
+                        </div>
+                        <div class="text-4xl">👥</div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg shadow p-6 border-b-4 border-indigo-500">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-600 text-sm">Всего книг</p>
+                            <p class="text-3xl font-bold text-gray-900" id="totalBooks">0</p>
+                        </div>
+                        <div class="text-4xl">📖</div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg shadow p-6 border-b-4 border-yellow-500">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-600 text-sm">Всего заказов</p>
+                            <p class="text-3xl font-bold text-gray-900" id="totalOrders">0</p>
+                        </div>
+                        <div class="text-4xl">📋</div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg shadow p-6 border-b-4 border-green-500">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-600 text-sm">Общий доход</p>
+                            <p class="text-3xl font-bold text-green-600" id="totalRevenue">0 сом</p>
+                        </div>
+                        <div class="text-4xl">💰</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-6">
+                <div class="bg-white rounded-lg shadow p-6">
+                    <h3 class="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">📋 Последние заказы</h3>
+                    <div id="recentOrders" class="space-y-3">
+                        <p class="text-gray-400 text-sm italic">Загрузка...</p>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg shadow p-6">
+                    <h3 class="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">👥 Новые пользователи</h3>
+                    <div id="recentUsers" class="space-y-3">
+                        <p class="text-gray-400 text-sm italic">Загрузка...</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-lg shadow p-6 mt-6">
+                <h3 class="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">🏆 Популярные книги</h3>
+                <div id="topBooks" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <p class="text-gray-400 text-sm italic">Загрузка...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 1. Получаем токен динамически через функцию, чтобы всегда иметь актуальное значение
+    const getToken = () => localStorage.getItem('token');
+
+    function checkAuth() {
+        const token = getToken();
+        // Проверяем не только наличие, но и чтобы это не была строка "undefined" или "null"
+        if (!token || token === 'undefined' || token === 'null') {
+            console.warn("Доступ запрещен: токен отсутствует");
+            window.location.replace('admin-login.html');
+        }
+    }
+
+    function logout() {
+        console.log("Выход из системы...");
+        localStorage.clear();
+        window.location.replace('admin-login.html');
+    }
+
+    // 2. Универсальная функция для fetch
+    async function apiRequest(url) {
+        const token = getToken();
+
+        try {
+            const response = await fetch(url, {
+                headers: {
+                    'Authorization': 'Bearer ' + token, // Проверь, что в Spring Security нет двойного Bearer
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            // Если сервер говорит "Стоп", значит токен просрочен или неверен
+            if (response.status === 401 || response.status === 403) {
+                console.error("Ошибка авторизации (401/403). Токен невалиден.");
+                logout();
+                return null;
+            }
+
+            if (!response.ok) {
+                console.error(`Ошибка запроса: ${response.status}`);
+                return null;
+            }
+
+            return await response.json();
+        } catch (error) {
+            console.error("Критическая ошибка сети:", error);
+            return null;
+        }
+    }
+
+    async function loadDashboardData() {
+        const token = getToken();
+        if (!token) return;
+
+        try {
+            // Загрузка статистики
+            // ВАЖНО: Если этого эндпоинта /api/admin/stats еще нет в Java, закомментируй эту часть
+            const stats = await apiRequest('/api/admin/stats');
+            if (stats) {
+                document.getElementById('totalUsers').textContent = stats.totalUsers || 0;
+                document.getElementById('totalBooks').textContent = stats.totalBooks || 0;
+                document.getElementById('totalOrders').textContent = stats.totalOrders || 0;
+                document.getElementById('totalRevenue').textContent = (stats.totalRevenue || 0) + ' сом';
+            }
+
+            // Загрузка последних пользователей для проверки связи
+            const users = await apiRequest('/api/admin/users');
+            if (users) {
+                const recentUsersHtml = users.slice(-5).reverse().map(user => `
+                    <div class="border-l-4 border-green-500 bg-green-50 p-3 rounded-r-lg">
+                        <p class="font-bold text-gray-900">${user.fullName || 'Без имени'}</p>
+                        <p class="text-xs text-gray-600 italic">${user.email}</p>
+                        <p class="text-xs font-bold text-green-700 mt-1 uppercase">${user.role}</p>
+                    </div>
+                `).join('');
+                document.getElementById('recentUsers').innerHTML = recentUsersHtml || '<p class="text-gray-500 text-sm">Пользователей пока нет</p>';
+
+                // Отобразим имя текущего админа из токена или списка
+                document.getElementById('currentUser').textContent = "Админ: " + (localStorage.getItem('userId') || 'Admin');
+            }
+            // Загрузка последних заказов
+            const orders = await apiRequest('/api/admin/orders');
+            if (orders) {
+                const recentOrdersHtml = orders.slice(-5).reverse().map(order => `
+        <div class="border-l-4 border-blue-500 bg-blue-50 p-3 rounded-r-lg flex justify-between items-center">
+            <div>
+                <p class="font-bold text-gray-900">Заказ #${order.orderId || order.id}</p>
+                <p class="text-xs text-gray-600">${order.customerName || 'Клиент'}</p>
+            </div>
+            <div class="text-right">
+                <p class="text-sm font-bold text-blue-700">${order.totalPrice || order.price} сом</p>
+                <p class="text-[10px] uppercase font-black text-gray-500">${order.status}</p>
+            </div>
+        </div>
+    `).join('');
+                document.getElementById('recentOrders').innerHTML = recentOrdersHtml || '<p class="text-gray-500 text-sm">Заказов пока нет</p>';
+            }
+
+        } catch (error) {
+            console.error('Ошибка в loadDashboardData:', error);
+        }
+    }
+
+    // Инициализация
+    checkAuth();
+
+    // Запускаем загрузку данных только после проверки авторизации
+    window.addEventListener('DOMContentLoaded', () => {
+        loadDashboardData();
+    });
+
+    // Обновляем раз в минуту
+    setInterval(loadDashboardData, 60000);
+</script>
+
+</body>
+</html>

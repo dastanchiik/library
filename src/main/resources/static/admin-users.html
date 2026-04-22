@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Управление пользователями - BookCloud Admin</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50">
+
+<div class="flex h-screen">
+    <div class="w-64 bg-gray-900 text-white flex flex-col shadow-xl">
+        <div class="p-6 border-b border-gray-700">
+            <h1 class="text-2xl font-black italic">📚 BookCloud</h1>
+            <p class="text-blue-400 text-xs font-bold tracking-widest uppercase mt-1">Admin Panel</p>
+        </div>
+
+        <nav class="flex-1 p-6 space-y-2">
+            <a href="admin-dashboard.html" class="block px-4 py-3 text-gray-300 hover:bg-gray-800 rounded-lg transition">📊 Dashboard</a>
+            <a href="admin-users.html" class="block px-4 py-3 bg-blue-600 rounded-lg font-semibold shadow-lg shadow-blue-900/50">👥 Пользователи</a>
+            <a href="admin-books.html" class="block px-4 py-3 text-gray-300 hover:bg-gray-800 rounded-lg transition">📖 Книги</a>
+            <a href="admin-orders.html" class="block px-4 py-3 text-gray-300 hover:bg-gray-800 rounded-lg transition">📋 Заказы</a>
+            <a href="admin-categories.html" class="block px-4 py-3 text-gray-300 hover:bg-gray-800 rounded-lg transition">🏷️ Категории</a>
+        </nav>
+
+        <div class="p-6 border-t border-gray-700">
+            <button onclick="logout()" class="w-full px-4 py-3 bg-red-600/20 text-red-400 hover:bg-red-600 hover:text-white rounded-lg font-bold transition duration-300">🚪 Выход</button>
+        </div>
+    </div>
+
+    <div class="flex-1 flex flex-col overflow-hidden">
+        <div class="bg-white shadow-sm p-6 flex justify-between items-center border-b">
+            <h2 class="text-3xl font-black text-gray-800">Управление пользователями</h2>
+            <button onclick="openUserModal()" class="bg-blue-600 text-white px-6 py-3 rounded-xl hover:bg-blue-700 font-bold shadow-lg shadow-blue-200 transition-all active:scale-95">
+                + Добавить пользователя
+            </button>
+        </div>
+
+        <div class="flex-1 overflow-auto p-8">
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                <div class="p-6 border-b border-gray-50 flex justify-between items-center bg-gray-50/50">
+                    <div class="relative w-72">
+                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400">🔍</span>
+                        <input type="text" id="userSearch" placeholder="Поиск по имени или email..." class="w-full pl-10 pr-4 py-2 bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-sm transition">
+                    </div>
+                </div>
+
+                <table class="w-full text-left">
+                    <thead>
+                    <tr class="text-[11px] font-black uppercase tracking-wider text-gray-400 border-b">
+                        <th class="px-6 py-4">ID</th>
+                        <th class="px-6 py-4">Пользователь</th>
+                        <th class="px-6 py-4">Роль</th>
+                        <th class="px-6 py-4">Баланс</th>
+                        <th class="px-6 py-4 text-right">Действия</th>
+                    </tr>
+                    </thead>
+                    <tbody id="usersTableBody" class="divide-y divide-gray-50">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="userModal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+    <div class="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md transform transition-all">
+        <h3 id="userModalTitle" class="text-2xl font-black text-gray-900 mb-6">Новый пользователь</h3>
+
+        <form id="userForm" class="space-y-4">
+            <div>
+                <label class="block text-[10px] font-black text-gray-400 uppercase mb-1">Полное имя</label>
+                <input type="text" id="userFullName" required class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none">
+            </div>
+
+            <div>
+                <label class="block text-[10px] font-black text-gray-400 uppercase mb-1">Email (Логин)</label>
+                <input type="email" id="userEmail" required class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none">
+            </div>
+
+            <div>
+                <label class="block text-[10px] font-black text-gray-400 uppercase mb-1">Пароль</label>
+                <input type="password" id="userPassword" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none">
+                <p id="passwordHint" class="text-[10px] text-gray-400 mt-1 hidden italic">Оставьте пустым, чтобы не менять</p>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-[10px] font-black text-gray-400 uppercase mb-1">Роль</label>
+                    <select id="userRole" required class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none font-bold">
+                        <option value="USER">USER</option>
+                        <option value="ADMIN">ADMIN</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-[10px] font-black text-gray-400 uppercase mb-1">Баланс (сом)</label>
+                    <input type="number" id="userBalance" step="0.1" value="0" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none">
+                </div>
+            </div>
+
+            <div class="flex gap-3 pt-6">
+                <button type="submit" class="flex-1 bg-blue-600 text-white py-4 rounded-xl hover:bg-blue-700 font-black shadow-lg transition active:scale-95">Сохранить</button>
+                <button type="button" onclick="closeUserModal()" class="flex-1 bg-gray-100 text-gray-600 py-4 rounded-xl hover:bg-gray-200 font-bold transition">Отмена</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    const token = localStorage.getItem('token');
+    let currentUserId = null;
+
+    function checkAuth() {
+        if (!token) window.location.href = 'admin-login.html';
+    }
+
+    function logout() {
+        localStorage.clear();
+        window.location.href = 'admin-login.html';
+    }
+
+    const getHeaders = () => ({
+        'Authorization': 'Bearer ' + token,
+        'Content-Type': 'application/json'
+    });
+
+    async function loadUsers() {
+        try {
+            const response = await fetch('/api/admin/users', { headers: getHeaders() });
+            if (response.status === 403) logout();
+
+            const users = await response.json();
+            const tbody = document.getElementById('usersTableBody');
+            tbody.innerHTML = users.map(user => `
+                <tr class="hover:bg-blue-50/30 transition-colors group">
+                    <td class="px-6 py-4 text-xs font-mono text-gray-400">#${user.id}</td>
+                    <td class="px-6 py-4">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-black">
+                                ${user.fullName ? user.fullName[0] : '?'}
+                            </div>
+                            <div>
+                                <p class="text-sm font-bold text-gray-900">${user.fullName || 'Без имени'}</p>
+                                <p class="text-xs text-gray-500">${user.email}</p>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4">
+                        <span class="px-3 py-1 text-[10px] font-black rounded-full border ${user.role === 'ADMIN' ? 'bg-purple-50 text-purple-600 border-purple-100' : 'bg-gray-50 text-gray-600 border-gray-100'}">
+                            ${user.role}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4">
+                        <p class="text-sm font-black text-gray-700">${user.balance || 0} <span class="text-[10px] text-gray-400">сом</span></p>
+                    </td>
+                    <td class="px-6 py-4 text-right">
+                        <div class="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <button onclick="editUser(${user.id})" class="p-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-600 hover:text-white transition">✏️</button>
+                            <button onclick="deleteUser(${user.id})" class="p-2 bg-red-50 text-red-500 rounded-lg hover:bg-red-500 hover:text-white transition">🗑️</button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        } catch (e) { console.error('Ошибка загрузки:', e); }
+    }
+
+    function openUserModal(userId = null) {
+        currentUserId = userId;
+        document.getElementById('userModal').classList.remove('hidden');
+        document.getElementById('userForm').reset();
+
+        const passHint = document.getElementById('passwordHint');
+        const passInput = document.getElementById('userPassword');
+
+        if (userId) {
+            document.getElementById('userModalTitle').innerText = 'Правка профиля';
+            passInput.required = false;
+            passHint.classList.remove('hidden');
+            fetchUser(userId);
+        } else {
+            document.getElementById('userModalTitle').innerText = 'Новый пользователь';
+            passInput.required = true;
+            passHint.classList.add('hidden');
+        }
+    }
+
+    async function fetchUser(id) {
+        const res = await fetch(`/api/admin/users/${id}`, { headers: getHeaders() });
+        const user = await res.json();
+        document.getElementById('userFullName').value = user.fullName || '';
+        document.getElementById('userEmail').value = user.email;
+        document.getElementById('userRole').value = user.role;
+        document.getElementById('userBalance').value = user.balance || 0;
+    }
+
+    function closeUserModal() {
+        document.getElementById('userModal').classList.add('hidden');
+    }
+
+    document.getElementById('userForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const data = {
+            fullName: document.getElementById('userFullName').value,
+            email: document.getElementById('userEmail').value,
+            role: document.getElementById('userRole').value,
+            balance: parseFloat(document.getElementById('userBalance').value)
+        };
+        const pass = document.getElementById('userPassword').value;
+        if (pass) data.password = pass;
+
+        const method = currentUserId ? 'PUT' : 'POST';
+        const url = currentUserId ? `/api/admin/users/${currentUserId}` : '/api/admin/users';
+
+        try {
+            const res = await fetch(url, {
+                method,
+                headers: getHeaders(),
+                body: JSON.stringify(data)
+            });
+            if (res.ok) {
+                closeUserModal();
+                loadUsers();
+                alert('Готово!');
+            } else { alert('Ошибка сохранения'); }
+        } catch (e) { alert('Ошибка сети'); }
+    });
+
+    async function deleteUser(id) {
+        if (!confirm('Выгнать пользователя из системы?')) return;
+        const res = await fetch(`/api/admin/users/${id}`, { method: 'DELETE', headers: getHeaders() });
+        if (res.ok) loadUsers();
+    }
+
+    // Живой поиск
+    document.getElementById('userSearch').addEventListener('input', (e) => {
+        const val = e.target.value.toLowerCase();
+        document.querySelectorAll('#usersTableBody tr').forEach(row => {
+            row.style.display = row.innerText.toLowerCase().includes(val) ? '' : 'none';
+        });
+    });
+
+    checkAuth();
+    loadUsers();
+</script>
+
+</body>
+</html>

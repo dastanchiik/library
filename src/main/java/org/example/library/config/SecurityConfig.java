@@ -46,6 +46,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         // Открываем доступ к авторизации и документации
                         .requestMatchers("/api/auth/**", "/swagger-ui/**", "/v3/api-docs/**","/").permitAll()
+                        // Админ эндпоинты только для админов
+                        .requestMatchers("/api/admin/**").hasAnyAuthority("ADMIN")
                         .anyRequest().permitAll()
                 )
                 .sessionManagement(session -> session
