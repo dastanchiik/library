@@ -1,69 +1,68 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="ru" id="htmlRoot">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Управление заказами - BookCloud Admin</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class'
+        }
+    </script>
 </head>
-<body class="bg-gray-100">
+<body class="bg-gray-100 dark:bg-gray-900 transition-colors duration-300">
 
 <div class="flex h-screen">
-    <!-- Sidebar -->
-    <div class="w-64 bg-gray-900 text-white flex flex-col">
-        <div class="p-6 border-b border-gray-700">
-            <h1 class="text-2xl font-black">📚 BookCloud</h1>
-            <p class="text-gray-400 text-sm">Admin Panel</p>
+    <div class="w-64 bg-gray-900 dark:bg-gray-950 text-white flex flex-col shadow-xl">
+        <div class="p-6 border-b border-gray-700 dark:border-gray-800">
+            <h1 class="text-2xl font-black italic">📚 BookCloud</h1>
+            <p class="text-blue-400 text-xs font-bold tracking-widest uppercase mt-1">Admin Panel</p>
         </div>
-
         <nav class="flex-1 p-6 space-y-2">
-            <a href="admin-dashboard.html" class="block px-4 py-3 text-gray-300 hover:bg-gray-800 rounded-lg">📊 Dashboard</a>
-            <a href="admin-users.html" class="block px-4 py-3 text-gray-300 hover:bg-gray-800 rounded-lg">👥 Пользователи</a>
-            <a href="admin-books.html" class="block px-4 py-3 text-gray-300 hover:bg-gray-800 rounded-lg">📖 Книги</a>
-            <a href="admin-orders.html" class="block px-4 py-3 bg-blue-600 rounded-lg font-semibold">📋 Заказы</a>
-            <a href="admin-categories.html" class="block px-4 py-3 text-gray-300 hover:bg-gray-800 rounded-lg">🏷️ Категории</a>
-        </nav>
+            <a href="admin-dashboard.html" class="block px-4 py-3 text-gray-300 hover:bg-gray-800 rounded-lg transition">📊 Dashboard</a>
+            <!-- Новая кнопка Профиль -->
+            <a href="admin-profile.html" class="block px-4 py-3 text-gray-300 hover:bg-gray-800 rounded-lg transition">👤 Мой профиль</a>
 
-        <div class="p-6 border-t border-gray-700 space-y-2">
-            <a href="admin-profile.html" class="block px-4 py-3 text-gray-300 hover:bg-gray-800 rounded-lg">⚙️ Профиль</a>
-            <button onclick="logout()" class="w-full px-4 py-3 bg-red-600 hover:bg-red-700 rounded-lg font-semibold">🚪 Выход</button>
+            <div class="my-4 border-t border-gray-800"></div> <!-- Разделитель -->
+
+            <a href="admin-users.html" class="block px-4 py-3 text-gray-300 hover:bg-gray-800 rounded-lg transition">👥 Пользователи</a>
+            <a href="admin-books.html" class="block px-4 py-3 text-gray-300 hover:bg-gray-800 rounded-lg transition">📖 Книги</a>
+            <a href="admin-orders.html" class="block px-4 py-3 text-gray-300 hover:bg-gray-800 rounded-lg transition">📋 Заказы</a>
+            <a href="admin-categories.html" class="block px-4 py-3 text-gray-300 hover:bg-gray-800 rounded-lg transition">🏷️ Категории</a>
+        </nav>
+        <div class="p-6 border-t border-gray-700 dark:border-gray-800 space-y-3">
+            <button onclick="toggleDarkMode()" class="w-full px-4 py-3 bg-gray-700 dark:bg-gray-800 text-gray-200 dark:text-gray-300 hover:bg-gray-600 dark:hover:bg-gray-700 rounded-lg font-bold transition duration-300">
+                <span id="themeBtnText">🌙 Тёмный режим</span>
+            </button>
+            <button onclick="logout()" class="w-full px-4 py-3 bg-red-600/20 text-red-400 hover:bg-red-600 hover:text-white rounded-lg font-bold transition duration-300">🚪 Выход</button>
         </div>
     </div>
 
-    <!-- Main Content -->
-    <div class="flex-1 flex flex-col">
-        <!-- Header -->
-        <div class="bg-white shadow p-6 flex justify-between items-center">
-            <h2 class="text-3xl font-bold text-gray-900">Управление заказами</h2>
-            <div class="flex gap-2">
-                <select id="statusFilter" class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    <option value="">Все статусы</option>
-                    <option value="PENDING">Ожидание</option>
-                    <option value="COMPLETED">Завершено</option>
-                    <option value="CANCELLED">Отменено</option>
-                </select>
+    <div class="flex-1 flex flex-col overflow-hidden">
+        <div class="bg-white dark:bg-gray-800 shadow-sm p-6 flex justify-between items-center border-b dark:border-gray-700">
+            <h2 class="text-3xl font-black text-gray-800 dark:text-white">Управление заказами</h2>
+            <div class="flex gap-4">
+                <input type="text" id="orderSearchInput" placeholder="Поиск по username (Enter)..."
+                       class="px-4 py-2 border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-xl focus:ring-2 focus:ring-blue-500 outline-none shadow-sm">
             </div>
         </div>
 
-        <!-- Content -->
-        <div class="flex-1 overflow-auto p-6">
-            <!-- Orders Table -->
-            <div class="bg-white rounded-lg shadow overflow-hidden">
+        <div class="flex-1 overflow-auto p-8">
+            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
                 <table class="w-full">
-                    <thead class="bg-gray-50 border-b border-gray-200">
-                        <tr>
-                            <th class="px-6 py-3 text-left text-sm font-semibold text-gray-900">ID</th>
-                            <th class="px-6 py-3 text-left text-sm font-semibold text-gray-900">Пользователь</th>
-                            <th class="px-6 py-3 text-left text-sm font-semibold text-gray-900">Сумма</th>
-                            <th class="px-6 py-3 text-left text-sm font-semibold text-gray-900">Статус</th>
-                            <th class="px-6 py-3 text-left text-sm font-semibold text-gray-900">Дата</th>
-                            <th class="px-6 py-3 text-left text-sm font-semibold text-gray-900">Действия</th>
-                        </tr>
+                    <thead class="bg-gray-50 dark:bg-gray-700 border-b border-gray-100 dark:border-gray-600">
+                    <tr>
+                        <th class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-300 uppercase">ID</th>
+                        <th class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-300 uppercase">Покупатель</th>
+                        <th class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-300 uppercase">Книга</th>
+                        <th class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-300 uppercase">Сумма</th>
+                        <th class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-300 uppercase">Статус</th>
+                        <th class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-300 uppercase">Дата</th>
+                        <th class="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-300 uppercase">Действия</th>
+                    </tr>
                     </thead>
-                    <tbody id="ordersTable" class="divide-y divide-gray-200">
-                        <tr class="hover:bg-gray-50">
-                            <td colspan="6" class="px-6 py-4 text-center text-gray-500">Загрузка...</td>
-                        </tr>
+                    <tbody id="ordersTable" class="divide-y divide-gray-100">
                     </tbody>
                 </table>
             </div>
@@ -71,204 +70,250 @@
     </div>
 </div>
 
-<!-- Order Details Modal -->
-<div id="orderModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-    <div class="bg-white rounded-lg shadow-xl p-8 w-full max-w-2xl max-h-96 overflow-y-auto">
-        <h3 class="text-2xl font-bold text-gray-900 mb-6" id="orderModalTitle">Детали заказа</h3>
-
-        <div id="orderDetails" class="space-y-4 mb-6">
-            <!-- Loaded dynamically -->
+<!-- Модальное окно для деталей заказа и изменения статуса -->
+<div id="orderDetailModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 max-w-2xl w-full mx-4">
+        <div class="flex justify-between items-center mb-6">
+            <h3 class="text-2xl font-bold text-gray-800 dark:text-white">Детали заказа</h3>
+            <button onclick="closeOrderDetailModal()" class="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 text-2xl">&times;</button>
         </div>
 
-        <div class="flex gap-3">
-            <select id="statusSelect" class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                <option value="PENDING">Ожидание</option>
-                <option value="COMPLETED">Завершено</option>
-                <option value="CANCELLED">Отменено</option>
-            </select>
-            <button onclick="updateOrderStatus()" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 font-semibold">
-                Обновить статус
-            </button>
-            <button onclick="closeOrderModal()" class="bg-gray-300 text-gray-900 px-6 py-2 rounded-lg hover:bg-gray-400 font-semibold">
-                Закрыть
-            </button>
+        <div class="space-y-6">
+            <!-- Информация о покупателе -->
+            <div class="border-b dark:border-gray-700 pb-4">
+                <h4 class="text-lg font-bold text-gray-800 dark:text-white mb-4">Информация о покупателе</h4>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <p class="text-sm text-gray-500 dark:text-gray-400 uppercase">Username (уникальное имя)</p>
+                        <p class="text-lg font-semibold text-gray-900 dark:text-gray-100" id="modalUsername">—</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-500 dark:text-gray-400 uppercase">Полное имя</p>
+                        <p class="text-lg font-semibold text-gray-900 dark:text-gray-100" id="modalCustomerName">—</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-500 dark:text-gray-400 uppercase">Email</p>
+                        <p class="text-lg font-semibold text-gray-900 dark:text-gray-100" id="modalUserEmail">—</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-500 dark:text-gray-400 uppercase">ID пользователя</p>
+                        <p class="text-lg font-semibold text-gray-900 dark:text-gray-100" id="modalUserId">—</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Информация о заказе -->
+            <div class="border-b dark:border-gray-700 pb-4">
+                <h4 class="text-lg font-bold text-gray-800 dark:text-white mb-4">Информация о заказе</h4>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <p class="text-sm text-gray-500 dark:text-gray-400 uppercase">Книга</p>
+                        <p class="text-lg font-semibold text-gray-900 dark:text-gray-100" id="modalBookTitle">—</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-500 dark:text-gray-400 uppercase">Цена</p>
+                        <p class="text-lg font-semibold text-blue-600 dark:text-blue-400" id="modalTotalPrice">—</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-500 dark:text-gray-400 uppercase">Дата заказа</p>
+                        <p class="text-lg font-semibold text-gray-900 dark:text-gray-100" id="modalOrderDate">—</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Изменение статуса -->
+            <div>
+                <h4 class="text-lg font-bold text-gray-800 dark:text-white mb-4">Изменить статус</h4>
+                <div class="flex gap-3">
+                    <select id="statusSelect" class="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                        <option value="">Выберите новый статус</option>
+                        <option value="PENDING">Ожидание</option>
+                        <option value="COMPLETED">Завершен</option>
+                        <option value="CANCELLED">Отменен</option>
+                    </select>
+                    <button onclick="updateOrderStatusModal()" class="px-6 py-2 bg-blue-600 dark:bg-blue-700 text-white font-bold rounded-lg hover:bg-blue-700 dark:hover:bg-blue-600 transition">Изменить</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex justify-end mt-8">
+            <button onclick="closeOrderDetailModal()" class="px-6 py-2 bg-gray-300 dark:bg-gray-700 text-gray-800 dark:text-gray-200 font-bold rounded-lg hover:bg-gray-400 dark:hover:bg-gray-600 transition">Закрыть</button>
         </div>
     </div>
 </div>
 
 <script>
+    const token = localStorage.getItem('token');
+    if (!token) window.location.href = 'admin-login.html';
+
     let currentOrderId = null;
 
-    function checkAuth() {
-    const token = localStorage.getItem('token');
-    if (!token) {
-    window.location.href = 'admin-login.html';
-}
-}
-
-    function logout() {
-    localStorage.removeItem('token');
-    localStorage.removeItem('isAdmin');
-    window.location.href = 'welcome.html';
-}
-
-    async function loadOrders() {
-    const token = localStorage.getItem('token');
-    if (!token) return;
-
-    try {
-    const response = await fetch('/api/admin/orders', {
-    headers: { 'Authorization': 'Bearer ' + token }
-});
-
-    if (response.status === 403) {
-    window.location.href = 'admin-login.html';
-    return;
-}
-
-    const orders = await response.json();
-    if (!Array.isArray(orders)) return;
-
-    const statusFilter = document.getElementById('statusFilter').value;
-    const filtered = statusFilter ? orders.filter(o => o.status === statusFilter) : orders;
-
-    const tbody = document.getElementById('ordersTable');
-
-    const statusColors = {
-    'PENDING': 'bg-yellow-100 text-yellow-800',
-    'PAID': 'bg-blue-100 text-blue-800',
-    'COMPLETED': 'bg-green-100 text-green-800',
-    'CANCELLED': 'bg-red-100 text-red-800',
-    'FAILED': 'bg-red-200 text-red-900',
-    'NEW': 'bg-purple-100 text-purple-800'
-};
-
-    tbody.innerHTML = filtered.map(order => {
-    const id = order.orderId;
-    // ИСПРАВЛЕНИЕ: берем customerName, если email пустой
-    const customer = order.customerName || order.userEmail || 'Аноним';
-    const date = order.createdAt ? new Date(order.createdAt).toLocaleDateString('ru-RU') : '—';
-
-    return `
-                    <tr class="hover:bg-gray-50">
-                        <td class="px-6 py-4 text-sm text-gray-900 font-semibold">#${id}</td>
-                        <td class="px-6 py-4 text-sm text-gray-600">${customer}</td>
-                        <td class="px-6 py-4 text-sm text-gray-900 font-bold">${order.totalPrice || order.price} сом</td>
-                        <td class="px-6 py-4 text-sm">
-                            <span class="px-3 py-1 rounded-full text-xs font-semibold ${statusColors[order.status] || 'bg-gray-100 text-gray-800'}">
-                                ${order.status}
-                            </span>
-                        </td>
-                        <td class="px-6 py-4 text-sm text-gray-600">${date}</td>
-                        <td class="px-6 py-4 text-sm space-x-2">
-                            <button onclick="viewOrder(${id})" class="text-blue-600 hover:underline">Просмотр</button>
-                            <button onclick="deleteOrder(${id})" class="text-red-600 hover:underline">Удалить</button>
-                        </td>
-                    </tr>
-                `;
-}).join('') || '<tr><td colspan="6" class="px-6 py-4 text-center text-gray-500">Нет заказов</td></tr>';
-
-} catch (error) {
-    console.error('Ошибка:', error);
-}
-}
-
-    async function viewOrder(orderId) {
-        const token = localStorage.getItem('token');
-        try {
-            // ВАЖНО: путь должен совпадать с контроллером @GetMapping("get/one/order/{id}")
-            const response = await fetch(`/api/admin/get/one/order/${orderId}`, {
-                headers: { 'Authorization': 'Bearer ' + token }
-            });
-
-            if (!response.ok) {
-                // Если сервер вернул 404, значит путь /api/admin/orders/get/one/order/6 не существует
-                throw new Error(`Ошибка ${response.status}: Проверь путь в контроллере или JS`);
-            }
-
-            const order = await response.json();
-            currentOrderId = orderId;
-
-            // Наполняем модалку
-            document.getElementById('orderModalTitle').textContent = `Заказ #${order.orderId || order.id}`;
-            document.getElementById('statusSelect').value = order.status;
-
-            const details = `
-            <div class="grid grid-cols-2 gap-4">
-                <div>
-                    <p class="text-sm text-gray-600">Клиент</p>
-                    <p class="font-semibold text-gray-900">${order.customerName || order.userEmail || 'Dastan'}</p>
-                </div>
-                <div>
-                    <p class="text-sm text-gray-600">Книга</p>
-                    <p class="font-semibold text-gray-900">${order.bookTitle || 'Не указана'}</p>
-                </div>
-                <div>
-                    <p class="text-sm text-gray-600">Сумма</p>
-                    <p class="font-semibold text-gray-900">${order.totalPrice || order.price} сом</p>
-                </div>
-                <div>
-                    <p class="text-sm text-gray-600">Статус</p>
-                    <p class="font-semibold text-gray-900">${order.status}</p>
-                </div>
-            </div>
-        `;
-
-            document.getElementById('orderDetails').innerHTML = details;
-            document.getElementById('orderModal').classList.remove('hidden');
-
-        } catch (error) {
-            alert(error.message);
+    // ===== ТЁМНЫЙ РЕЖИМ =====
+    function initDarkMode() {
+        const isDark = localStorage.getItem('darkMode') === 'true';
+        if (isDark) {
+            document.getElementById('htmlRoot').classList.add('dark');
+            document.getElementById('themeBtnText').textContent = '☀️ Светлый режим';
         }
     }
 
-    async function updateOrderStatus() {
-    const token = localStorage.getItem('token');
-    const statusValue = document.getElementById('statusSelect').value;
+    function toggleDarkMode() {
+        const htmlRoot = document.getElementById('htmlRoot');
+        const isDark = htmlRoot.classList.toggle('dark');
+        localStorage.setItem('darkMode', isDark);
+        document.getElementById('themeBtnText').textContent = isDark ? '☀️ Светлый режим' : '🌙 Тёмный режим';
+    }
 
-    try {
-    const response = await fetch(`/api/admin/orders/${currentOrderId}/status`, {
-    method: 'PATCH',
-    headers: {
-    'Authorization': 'Bearer ' + token,
-    'Content-Type': 'application/json'
-},
-    body: JSON.stringify({ status: statusValue })
-});
+    initDarkMode();
 
-    if (response.ok) {
-    closeOrderModal();
+    // ===== ОСНОВНОЙ КОД =====
+    const getHeaders = () => ({
+        'Authorization': 'Bearer ' + token,
+        'Content-Type': 'application/json'
+    });
+
+    function logout() {
+        localStorage.clear();
+        window.location.href = 'admin-login.html';
+    }
+
+    // 1. Загрузка заказов
+    async function loadOrders() {
+        try {
+            const response = await fetch('/api/admin/orders', { headers: getHeaders() });
+            if (response.status === 401 || response.status === 403) { localStorage.clear(); window.location.href = 'admin-login.html'; return; }
+            const orders = await response.json();
+            renderOrders(orders);
+        } catch (e) {
+            console.error("Ошибка:", e);
+        }
+    }
+
+    // 2. Отрисовка таблицы заказов
+    function renderOrders(orders) {
+        const tbody = document.getElementById('ordersTable');
+        if (!tbody) return;
+
+        if (!orders || orders.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="7" class="px-6 py-10 text-center text-gray-400 font-medium">Заказов пока нет</td></tr>';
+            return;
+        }
+
+        tbody.innerHTML = orders.map(order => {
+            const id = order.orderId;
+            const name = order.customerName;
+            const title = order.bookTitle;
+            const total = order.totalPrice;
+            const status = order.status;
+            const date = order.orderDate;
+
+            return `
+                <tr class="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors border-b dark:border-gray-700">
+                    <td class="px-6 py-4 text-sm font-bold text-gray-900 dark:text-white">#${id}</td>
+                    <td class="px-6 py-4 text-sm text-gray-600 dark:text-gray-400">${name || 'Не указан'}</td>
+                    <td class="px-6 py-4 text-sm text-gray-800 dark:text-gray-200 font-medium">${title}</td>
+                    <td class="px-6 py-4 text-sm font-black text-blue-600 dark:text-blue-400">${total} сом</td>
+                    <td class="px-6 py-4">
+                        <span class="px-3 py-1 rounded-full text-[10px] font-black uppercase ${getStatusClass(status)}">
+                            ${status}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400 font-medium">
+                        ${date ? new Date(date).toLocaleString('ru-RU') : '---'}
+                    </td>
+                    <td class="px-6 py-4 text-sm">
+                        <button onclick="viewOrderDetails(${id})" class="px-3 py-1 bg-blue-600 dark:bg-blue-700 text-white font-semibold rounded hover:bg-blue-700 dark:hover:bg-blue-600 transition text-xs">
+                            Детали
+                        </button>
+                    </td>
+                </tr>
+            `;
+        }).join('');
+    }
+
+    function getStatusClass(status) {
+        if (status === 'COMPLETED') return 'bg-green-100 text-green-700';
+        if (status === 'CANCELLED') return 'bg-red-100 text-red-700';
+        return 'bg-blue-100 text-blue-700';
+    }
+
+    // 3. Открыть модальное окно деталей заказа
+    async function viewOrderDetails(orderId) {
+        try {
+            const response = await fetch(`/api/admin/get/one/order/${orderId}`, { headers: getHeaders() });
+            if (response.status === 401 || response.status === 403) { localStorage.clear(); window.location.href = 'admin-login.html'; return; }
+            const order = await response.json();
+
+            currentOrderId = orderId;
+            document.getElementById('modalUsername').textContent = order.username || '—';
+            document.getElementById('modalCustomerName').textContent = order.customerName || '—';
+            document.getElementById('modalUserEmail').textContent = order.userEmail || '—';
+            document.getElementById('modalUserId').textContent = order.userId || '—';
+            document.getElementById('modalBookTitle').textContent = order.bookTitle || '—';
+            document.getElementById('modalTotalPrice').textContent = (order.totalPrice || 0) + ' сом';
+            document.getElementById('modalOrderDate').textContent = order.orderDate ? new Date(order.orderDate).toLocaleString('ru-RU') : '—';
+            document.getElementById('statusSelect').value = order.status;
+
+            document.getElementById('orderDetailModal').classList.remove('hidden');
+        } catch (error) {
+            console.error('Ошибка загрузки деталей заказа:', error);
+        }
+    }
+
+    // 4. Закрыть модальное окно
+    function closeOrderDetailModal() {
+        document.getElementById('orderDetailModal').classList.add('hidden');
+        currentOrderId = null;
+    }
+
+    // 5. Обновить статус заказа из модального окна
+    async function updateOrderStatusModal() {
+        if (!currentOrderId) return;
+
+        const statusValue = document.getElementById('statusSelect').value;
+        if (!statusValue) {
+            alert('Выберите новый статус');
+            return;
+        }
+
+        try {
+            const response = await fetch(`/api/admin/orders/${currentOrderId}/status`, {
+                method: 'PATCH',
+                headers: getHeaders(),
+                body: JSON.stringify({ status: statusValue })
+            });
+
+            if (response.status === 401 || response.status === 403) { localStorage.clear(); window.location.href = 'admin-login.html'; return; }
+
+            if (response.ok) {
+                closeOrderDetailModal();
+                loadOrders();
+                alert('Статус заказа обновлен');
+            } else {
+                const errorData = await response.json();
+                alert('Ошибка: ' + (errorData.error || 'Не удалось обновить'));
+            }
+        } catch (error) {
+            console.error('Ошибка обновления статуса:', error);
+            alert('Ошибка сервера');
+        }
+    }
+
+    // 6. Поиск по username
+    document.getElementById('orderSearchInput').addEventListener('keypress', async (e) => {
+        if (e.key === 'Enter') {
+            const username = e.target.value.trim();
+            if (!username) { loadOrders(); return; }
+            try {
+                const response = await fetch(`/api/admin/orders/search/username?username=${encodeURIComponent(username)}`, { headers: getHeaders() });
+                if (response.status === 401 || response.status === 403) { localStorage.clear(); window.location.href = 'admin-login.html'; return; }
+                renderOrders(await response.json());
+            } catch (err) { console.error(err); }
+        }
+    });
+
     loadOrders();
-} else {
-    alert('Ошибка: сервер не смог обновить статус');
-}
-} catch (error) {
-    alert('Ошибка связи с сервером');
-}
-}
-
-    async function deleteOrder(orderId) {
-    if (!confirm('Вы уверены?')) return;
-    const token = localStorage.getItem('token');
-    try {
-    const response = await fetch(`/api/admin/orders/${orderId}`, {
-    method: 'DELETE',
-    headers: { 'Authorization': 'Bearer ' + token }
-});
-    if(response.ok) loadOrders();
-} catch (e) { console.error(e); }
-}
-
-    function closeOrderModal() {
-    document.getElementById('orderModal').classList.add('hidden');
-}
-
-    document.getElementById('statusFilter').addEventListener('change', loadOrders);
-
-    checkAuth();
-    loadOrders();
+    setInterval(loadOrders, 30000);
 </script>
-
 </body>
 </html>
-

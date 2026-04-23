@@ -16,6 +16,7 @@ public class OrderResponse {
     private String bookTitle;
     private Double price;
     private String customerName; // Имя покупателя вместо всего объекта User
+    private String username; // Уникальное имя пользователя
     private LocalDateTime orderDate;
     private String status;
     private String userEmail; // Добавляем email для удобства
@@ -29,10 +30,12 @@ public class OrderResponse {
         response.setBookTitle(order.getBook().getTitle());
         response.setPrice(order.getBook().getPrice());
         response.setCustomerName(order.getUser().getFullName());
+        response.setUsername(order.getUser().getUsername());
         response.setOrderDate(order.getOrderDate());
         response.setStatus(order.getStatus() != null ? order.getStatus().name() : "UNKNOWN");
         response.setTotalPrice(order.getTotalPrice());
         response.setUserId(order.getUser().getId());
+        response.setUserEmail(order.getUser().getEmail());
         response.setCreatedAt(order.getOrderDate()); // Используем orderDate как createdAt
         return response;
     }

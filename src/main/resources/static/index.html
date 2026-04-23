@@ -3,142 +3,247 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BookCloud — Главная</title>
+    <title>BookCloud - Твоя онлайн библиотека</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .book-img {
+            height: 250px;
+            width: 100%;
+            object-fit: contain;
+            background-color: #f9fafb;
+        }
+    </style>
 </head>
-<body class="bg-gray-100 font-sans">
+<body class="bg-gray-50 text-gray-900 font-sans">
 
-<nav class="bg-blue-600 p-4 text-white shadow-lg sticky top-0 z-50">
-    <div class="container mx-auto flex justify-between items-center">
-        <h1 class="text-2xl font-bold cursor-pointer" onclick="location.href='index.html'">📚 BookCloud</h1>
+    <!-- Header -->
+    <header class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+            <h1 class="text-2xl font-black text-blue-600 tracking-tight">📚 BookCloud</h1>
+            
+            <nav class="hidden md:flex space-x-8 font-semibold text-gray-600">
+                <a href="index.html" class="text-blue-600 border-b-2 border-blue-600 pb-1">Каталог</a>
+                <a href="my-books.html" class="hover:text-blue-600 transition">Мои книги</a>
+                <a href="orders.html" class="hover:text-blue-600 transition">Заказы</a>
+            </nav>
 
-        <div class="flex items-center gap-6">
-            <div class="text-right">
-                <p class="text-xs text-blue-200">Мой баланс</p>
-                <p id="nav-balance" class="font-bold text-white">Загрузка...</p>
-            </div>
-            <button onclick="location.href='profile.html'" class="group flex items-center gap-2 bg-blue-500 px-3 py-2 rounded-lg hover:bg-blue-400 transition">
-                <div class="w-8 h-8 bg-white text-blue-600 rounded-full flex items-center justify-center font-bold">
-                    <span id="nav-initials">U</span>
+            <div class="flex items-center gap-6">
+                <div id="userInfo" class="hidden flex items-center gap-3">
+                    <div class="text-right">
+                        <p id="usernameDisplay" class="text-sm font-bold"></p>
+                        <p id="balanceDisplay" class="text-xs text-blue-600 font-bold"></p>
+                    </div>
+                    <a href="profile.html" class="w-10 h-10 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center font-bold hover:bg-blue-200 transition">
+                        👤
+                    </a>
                 </div>
-                <span class="text-sm font-medium">Профиль</span>
-            </button>
+                <div id="authLinks" class="flex gap-2">
+                    <a href="login.html" class="px-4 py-2 text-blue-600 font-bold hover:bg-blue-50 rounded-lg">Вход</a>
+                    <a href="register.html" class="px-4 py-2 bg-blue-600 text-white font-bold rounded-lg shadow-md hover:bg-blue-700">Старт</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero / Promo -->
+    <div class="bg-blue-600 text-white py-12 px-4">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-8">
+            <div class="max-w-xl text-center md:text-left">
+                <h2 class="text-4xl md:text-5xl font-black mb-4 leading-tight">Читайте лучшие книги не выходя из дома</h2>
+                <p class="text-blue-100 text-lg mb-8">Тысячи историй в одном облаке. Начни свое путешествие прямо сейчас.</p>
+                <div class="relative max-w-md mx-auto md:mx-0">
+                    <input type="text" id="searchInput" placeholder="Поиск книги по названию..." 
+                           class="w-full px-6 py-4 rounded-2xl text-gray-900 shadow-xl focus:ring-4 focus:ring-blue-400 outline-none pr-16">
+                    <button class="absolute right-2 top-2 bg-blue-500 text-white p-2 rounded-xl hover:bg-blue-400">🔍</button>
+                </div>
+            </div>
+            <div class="hidden lg:block">
+                <div class="text-9xl opacity-20 transform -rotate-12">📚</div>
+            </div>
         </div>
     </div>
-</nav>
 
-<main class="container mx-auto py-10 px-4">
-    <div class="flex justify-between items-center mb-8">
-        <h2 class="text-3xl font-extrabold text-gray-800">Каталог книг</h2>
-        <div class="bg-white px-4 py-2 rounded-full shadow-sm text-sm text-gray-500">
-            Всего книг: <span id="book-count" class="font-bold text-blue-600">0</span>
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 py-12">
+        <div class="flex flex-col md:flex-row justify-between items-center mb-10 gap-6">
+            <h3 class="text-3xl font-black tracking-tight" id="catalogTitle">Каталог книг</h3>
+            
+            <div class="flex items-center gap-4 bg-white p-2 rounded-2xl shadow-sm border">
+                <span class="text-sm font-bold text-gray-500 pl-2">Категория:</span>
+                <select id="categoryFilter" onchange="filterByCategory()" 
+                        class="bg-transparent border-none outline-none font-bold text-blue-600 pr-4">
+                    <option value="">Все жанры</option>
+                    <option value="FICTION">Художественная</option>
+                    <option value="FANTASY">Фэнтези</option>
+                    <option value="SCIENCE">Наука</option>
+                    <option value="HISTORY">История</option>
+                    <option value="ROMANCE">Романтика</option>
+                    <option value="HORROR">Ужасы</option>
+                    <option value="MYSTERY">Детектив</option>
+                </select>
+            </div>
         </div>
-    </div>
 
-    <div id="book-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-    </div>
-</main>
+        <div id="booksGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+            <!-- Книги загружаются сюда -->
+            <div class="col-span-full flex justify-center py-20">
+                <div class="animate-spin rounded-full h-12 w-12 border-b-4 border-blue-600"></div>
+            </div>
+        </div>
+    </main>
 
-<script>
-    const USER_ID = localStorage.getItem('userId');
-    const token = localStorage.getItem('token');
+    <script>
+        const API_BASE = '/api/books';
+        const USER_API = '/api/user';
 
-    if (!USER_ID || !token) {
-        location.href = 'welcome.html';
-    }
+        async function init() {
+            checkAuth();
+            fetchBooks();
+        }
 
-    async function loadPageData() {
-        try {
-            // 1. Загрузка данных профиля
-            const userRes = await fetch(`/api/user/profile?id=${USER_ID}`, {
-                headers: { 'Authorization': 'Bearer ' + token }
-            });
-            if (userRes.ok) {
-                const user = await userRes.json();
-                document.getElementById('nav-balance').innerText = `${user.balance || 0} сом`;
-                if (user.fullName) document.getElementById('nav-initials').innerText = user.fullName.charAt(0).toUpperCase();
+        function checkAuth() {
+            const token = localStorage.getItem('token');
+            const authLinks = document.getElementById('authLinks');
+            const userInfo = document.getElementById('userInfo');
+
+            if (token) {
+                authLinks.classList.add('hidden');
+                userInfo.classList.remove('hidden');
+                fetchProfile();
+            }
+        }
+
+        async function fetchProfile() {
+            try {
+                const response = await fetch(`${USER_API}/profile`, {
+                    headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') }
+                });
+                if (response.ok) {
+                    const user = await response.json();
+                    document.getElementById('usernameDisplay').textContent = user.username;
+                    document.getElementById('balanceDisplay').textContent = `${user.balance} сом`;
+                }
+            } catch (error) {}
+        }
+
+        async function fetchBooks() {
+            const container = document.getElementById('booksGrid');
+            const params = new URLSearchParams(window.location.search);
+            const category = params.get('category');
+            
+            let url = API_BASE;
+            if (category) {
+                url = `${API_BASE}/category?category=${category}`;
+                document.getElementById('categoryFilter').value = category;
+                document.getElementById('catalogTitle').textContent = `Книги: ${category}`;
             }
 
-            // 2. Загрузка книг (твой верный эндпоинт!)
-            const bookRes = await fetch('/api/book/books');
+            try {
+                const response = await fetch(url);
+                const books = await response.json();
+                renderBooks(books);
+            } catch (error) {
+                container.innerHTML = '<p class="text-center col-span-full text-red-500 py-10">Ошибка загрузки книг</p>';
+            }
+        }
 
-            if (!bookRes.ok) {
-                console.error("Ошибка при запросе книг:", bookRes.status);
+        function renderBooks(books) {
+            const container = document.getElementById('booksGrid');
+            if (books.length === 0) {
+                container.innerHTML = '<p class="text-center col-span-full text-gray-500 py-10">Книг пока нет</p>';
                 return;
             }
 
-            const books = await bookRes.json();
-            document.getElementById('book-count').innerText = books.length;
-            const bookList = document.getElementById('book-list');
-
-            if (bookList) {
-                bookList.innerHTML = '';
-
-                if (books.length === 0) {
-                    bookList.innerHTML = '<div class="col-span-full text-center py-10 text-gray-500 italic">База данных пуста. Добавьте книгу в Swagger!</div>';
-                    return;
-                }
-
-                books.forEach(book => {
-                    const card = `
-        <div onclick="location.href='book-details.html?id=${book.id}'"
-             class="bg-white rounded-3xl shadow-sm border border-gray-200 overflow-hidden flex flex-col cursor-pointer hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 group">
-            <div class="p-6 flex-grow">
-                <span class="bg-blue-50 text-blue-600 text-[10px] font-black px-3 py-1 rounded-full uppercase">
-                    ${book.category || 'Книга'}
-                </span>
-                <h3 class="text-xl font-bold mt-4 group-hover:text-blue-600 transition-colors">${book.title || 'Без названия'}</h3>
-                <p class="text-gray-400 text-sm">${book.author || 'Автор неизвестен'}</p>
-            </div>
-            <div class="p-6 bg-gray-50 flex justify-between items-center">
-                <span class="text-2xl font-black text-blue-600">${book.price || 0} сом</span>
-                <div class="bg-blue-600 text-white p-2 rounded-xl group-hover:bg-blue-700 transition">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                    </svg>
+            container.innerHTML = books.map(book => `
+                <div class="bg-white rounded-3xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-300 group flex flex-col h-full border border-gray-100">
+                    <div class="relative overflow-hidden cursor-pointer" onclick="window.location.href='book-details.html?id=${book.id}'">
+                        <img src="${book.imageURL || 'https://via.placeholder.com/300x400?text=Нет+фото'}" 
+                             class="book-img group-hover:scale-105 transition-transform duration-500" 
+                             alt="${book.title}"
+                             onerror="this.src='https://via.placeholder.com/300x400?text=Ошибка+загрузки'">
+                        <div class="absolute top-4 right-4 bg-white/90 backdrop-blur px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider text-blue-600 shadow-sm">
+                            ${book.category}
+                        </div>
+                    </div>
+                    
+                    <div class="p-6 flex flex-col flex-1">
+                        <div class="mb-4">
+                            <h4 class="font-black text-lg text-gray-900 group-hover:text-blue-600 transition-colors line-clamp-1 cursor-pointer" 
+                                onclick="window.location.href='book-details.html?id=${book.id}'">${book.title}</h4>
+                            <p class="text-gray-400 text-sm font-medium">${book.author}</p>
+                        </div>
+                        
+                        <div class="mt-auto flex items-center justify-between gap-4">
+                            <div>
+                                <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Цена</p>
+                                <p class="text-xl font-black text-gray-900">${book.price} сом</p>
+                            </div>
+                            <button onclick="buyBook(${book.id}, ${book.price})" 
+                                    class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 rounded-2xl font-bold transition shadow-lg shadow-blue-200">
+                                Купить
+                            </button>
+                        </div>
+                    </div>
                 </div>
-            </div>
-        </div>`;
-                    bookList.insertAdjacentHTML('beforeend', card);
+            `).join('');
+        }
+
+        async function buyBook(bookId, price) {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                alert('Сначала войдите в систему!');
+                window.location.href = 'login.html';
+                return;
+            }
+
+            if (!confirm(`Купить эту книгу за ${price} сом?`)) return;
+
+            try {
+                const response = await fetch('/api/orders/buy', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': 'Bearer ' + token,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ bookId: bookId })
                 });
-            }
 
-        } catch (err) {
-            console.error("Ошибка:", err);
-        }
-    }
-
-    // ТА САМАЯ ФУНКЦИЯ КУПИТЬ — ДОБАВЬ ЕЁ СЮДА
-    async function buyBook(bookId) {
-        if (!confirm("Вы уверены, что хотите купить эту книгу?")) return;
-
-        try {
-            // Твой эндпоинт /api/order/buy из OrderApi
-            const url = `/api/order/buy?userId=${USER_ID}&bookId=${bookId}`;
-
-            const res = await fetch(url, {
-                method: 'POST',
-                headers: {
-                    'Authorization': 'Bearer ' + token
+                if (response.ok) {
+                    alert('Поздравляем! Книга успешно куплена.');
+                    fetchProfile(); // Refresh balance
+                } else {
+                    const data = await response.json();
+                    alert(`Ошибка: ${data.message || 'Не удалось совершить покупку'}`);
                 }
-            });
-
-            if (res.ok) {
-                alert("Книга успешно куплена!");
-                loadPageData(); // Обновляем баланс и список, если нужно
-            } else {
-                // Если в сервисе кидается исключение, оно придет сюда
-                const errorData = await res.json();
-                alert("Ошибка: " + (errorData.message || "Не удалось совершить покупку"));
+            } catch (error) {
+                alert('Произошла ошибка при оформлении заказа');
             }
-        } catch (err) {
-            console.error(err);
-            alert("Ошибка при отправке запроса на покупку");
         }
-    }
 
-    // Запускаем загрузку при старте страницы
-    loadPageData();
-</script>
+        function filterByCategory() {
+            const category = document.getElementById('categoryFilter').value;
+            if (category) {
+                window.location.href = `index.html?category=${category}`;
+            } else {
+                window.location.href = `index.html`;
+            }
+        }
+
+        // Search logic
+        document.getElementById('searchInput').oninput = async (e) => {
+            const query = e.target.value;
+            if (query.length < 2) {
+                if (query.length === 0) fetchBooks();
+                return;
+            }
+            try {
+                const response = await fetch(`${API_BASE}/search?title=${query}`);
+                const books = await response.json();
+                renderBooks(books);
+            } catch (error) {}
+        };
+
+        window.addEventListener('DOMContentLoaded', init);
+    </script>
 </body>
 </html>

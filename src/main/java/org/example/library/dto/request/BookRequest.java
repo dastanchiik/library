@@ -16,7 +16,8 @@ public class BookRequest {
     private int price;
 //    @JsonIgnore
     private Category category;
-    private String imageUrl;
+    private int salesCount;
+    private String imageURL;
     private String description;
     private String isbn;
     private int stock;

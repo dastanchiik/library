@@ -34,6 +34,8 @@ public class Book {
     @Column(nullable = false)
     private int stock;
 
+    private int salesCount = 0;
+
     @Column(nullable = false)
     private double price = 0;
 

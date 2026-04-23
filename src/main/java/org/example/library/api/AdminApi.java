@@ -3,17 +3,20 @@ package org.example.library.api;
 import lombok.RequiredArgsConstructor;
 import org.example.library.dto.request.BookRequest;
 import org.example.library.dto.request.UserRegisterRequest;
+import org.example.library.dto.request.UserRequest;
 import org.example.library.dto.response.BookResponse;
 import org.example.library.dto.response.OrderResponse;
 import org.example.library.dto.response.UserResponse;
 import org.example.library.model.Category;
 import org.example.library.model.OrderStatus;
-import org.example.library.service.AdminService;
-import org.example.library.service.OrderService;
+import org.example.library.service.*;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -21,14 +24,15 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/admin")
 @RequiredArgsConstructor
-@PreAuthorize("hasAuthority('ADMIN')") // Весь контроллер только для админов
+@PreAuthorize("hasAuthority('ADMIN')")
 public class AdminApi {
 
     private final AdminService adminService;
     private final OrderService orderService;
+    private final BookService bookService;
+    private final ImageUploadService imageUploadService;
 
     // ===== ПОЛЬЗОВАТЕЛИ =====
-
     @GetMapping("/users")
     public ResponseEntity<List<UserResponse>> getAllUsers() {
         return ResponseEntity.ok(adminService.getAllUsersForAdmin());
@@ -44,8 +48,8 @@ public class AdminApi {
         return ResponseEntity.ok(adminService.getProfile(id));
     }
 
-    @PutMapping("/users/{id}")
-    public ResponseEntity<UserResponse> updateUser(@PathVariable Long id, @RequestBody UserRegisterRequest request) {
+    @PutMapping("/users/update/{id}")
+    public ResponseEntity<UserResponse> updateUser(@PathVariable Long id, @RequestBody UserRequest request) {
         return ResponseEntity.ok(adminService.updateUser(id, request));
     }
 
@@ -64,7 +68,22 @@ public class AdminApi {
                         .toList()
         );
     }
+
     // ===== КНИГИ =====
+    @GetMapping("/search/book/title")
+    public ResponseEntity<List<BookResponse>> getAllBooksByTitle(@RequestParam String title) {
+        return ResponseEntity.ok(bookService.searchBooks(title));
+    }
+
+    @GetMapping("/search/book/category")
+    public ResponseEntity<List<BookResponse>> getAllBooksByCategory(@RequestParam String category) {
+        return ResponseEntity.ok(bookService.getBooksByCategory(category));
+    }
+
+    @GetMapping("/books/{id}")
+    public ResponseEntity<BookResponse> getBookById(@PathVariable Long id) {
+        return ResponseEntity.ok(bookService.getBookById(id));
+    }
 
     @GetMapping("/books")
     public ResponseEntity<List<BookResponse>> getAllBooks() {
@@ -75,6 +94,17 @@ public class AdminApi {
     public ResponseEntity<Map<String, String>> createBook(@RequestBody BookRequest request) {
         adminService.addBook(request);
         return ResponseEntity.ok(Map.of("message", "Книга добавлена"));
+    }
+
+    @PostMapping("/books/upload-image")
+    public ResponseEntity<Map<String, String>> uploadBookImage(@RequestParam("file") MultipartFile file) {
+        try {
+            String imageURL = imageUploadService.uploadImage(file);
+            return ResponseEntity.ok(Map.of("imageURL", imageURL));
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "Ошибка при загрузке изображения: " + e.getMessage()));
+        }
     }
 
     @PutMapping("/books/{id}")
@@ -90,13 +120,22 @@ public class AdminApi {
     }
 
     // ===== ЗАКАЗЫ =====
+    @GetMapping("/orders/search/isbn")
+    public ResponseEntity<List<OrderResponse>> searchOrders(@RequestParam String isbn) {
+        return ResponseEntity.ok(orderService.getByIsbn(isbn));
+    }
+
+    @GetMapping("/orders/search/username")
+    public ResponseEntity<List<OrderResponse>> searchOrdersByUsername(@RequestParam String username) {
+        return ResponseEntity.ok(orderService.getByUsername(username));
+    }
 
     @GetMapping("/orders")
     public ResponseEntity<List<OrderResponse>> getAllOrders() {
         return ResponseEntity.ok(adminService.getAllOrdersAsDto());
     }
 
-    @GetMapping("get/one/order/{id}")
+    @GetMapping("/get/one/order/{id}")
     public ResponseEntity<OrderResponse> getOneOrder(@PathVariable Long id) {
         return ResponseEntity.ok(orderService.getOrderById(id));
     }
@@ -119,8 +158,6 @@ public class AdminApi {
             return ResponseEntity.badRequest().body(Map.of("error", "Неверный статус: " + statusStr));
         }
     }
-
-    // ===== СТАТИСТИКА =====
 
     @GetMapping("/stats")
     public ResponseEntity<Map<String, Object>> getStats() {

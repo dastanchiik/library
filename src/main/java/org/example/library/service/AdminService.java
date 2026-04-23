@@ -3,6 +3,7 @@ package org.example.library.service;
 import lombok.RequiredArgsConstructor;
 import org.example.library.dto.request.BookRequest;
 import org.example.library.dto.request.UserRegisterRequest;
+import org.example.library.dto.request.UserRequest;
 import org.example.library.dto.response.BookResponse;
 import org.example.library.dto.response.OrderResponse;
 import org.example.library.dto.response.UserResponse;
@@ -47,7 +48,7 @@ public class AdminService {
     }
 
     @Transactional
-    public UserResponse updateUser(Long id, UserRegisterRequest request) {
+    public UserResponse updateUser(Long id, UserRequest request) {
         return userService.updateUser(id, request);
     }
 

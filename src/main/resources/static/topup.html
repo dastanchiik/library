@@ -1,24 +1,31 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="ru" id="htmlRoot">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Пополнение — BookCloud</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class'
+        }
+    </script>
     <style>
         .bank-card.active { border-color: #2563eb; background-color: #eff6ff; }
+        .dark .bank-card.active { background-color: #1e3a8a; }
     </style>
 </head>
-<body class="bg-slate-50 font-sans">
+<body class="bg-slate-50 dark:bg-gray-900 font-sans transition-colors duration-300">
 
-<nav class="bg-white border-b p-4 mb-6">
+<nav class="bg-white dark:bg-gray-800 border-b dark:border-gray-700 p-4 mb-6">
     <div class="container mx-auto flex items-center gap-4">
         <button onclick="location.href='profile.html'" class="p-2 hover:bg-gray-100 rounded-full transition">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
             </svg>
         </button>
-        <h1 class="text-xl font-bold text-slate-800">Пополнение баланса</h1>
+        <h1 class="text-xl font-bold text-slate-800 dark:text-white">Пополнение баланса</h1>
+        <button onclick="toggleDarkMode()" class="ml-auto px-3 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white rounded-lg font-semibold hover:bg-gray-300 dark:hover:bg-gray-600 transition" id="themeBtnTopup">🌙</button>
     </div>
 </nav>
 
@@ -116,6 +123,24 @@
             btn.disabled = false;
         }
     }
+
+    // ===== ТЁМНЫЙ РЕЖИМ =====
+    function initDarkMode() {
+        const isDark = localStorage.getItem('darkMode') === 'true';
+        if (isDark) {
+            document.getElementById('htmlRoot').classList.add('dark');
+        }
+        document.getElementById('themeBtnTopup').textContent = isDark ? '☀️' : '🌙';
+    }
+
+    function toggleDarkMode() {
+        const htmlRoot = document.getElementById('htmlRoot');
+        const isDark = htmlRoot.classList.toggle('dark');
+        localStorage.setItem('darkMode', isDark);
+        document.getElementById('themeBtnTopup').textContent = isDark ? '☀️' : '🌙';
+    }
+
+    initDarkMode();
 </script>
 </body>
 </html>

@@ -40,6 +40,8 @@ public class OrderService {
                 throw new RuntimeException("Книги нет в наличии");
             }
 
+            book.setSalesCount(book.getSalesCount() + 1);
+            bookRepository.save(book);
             // 3. Изменение состояний
             user.setBalance(user.getBalance() - book.getPrice());
             book.setStock(book.getStock() - 1);
@@ -77,6 +79,20 @@ public class OrderService {
 
     public List<Order> getAllOrders() {
         return orderRepository.findAll();
+    }
+
+    public List<OrderResponse> getByIsbn(String isbn) {
+            return orderRepository.findAllByBook_Isbn(isbn)
+                    .stream()
+                    .map(OrderResponse::fromEntity) // Превращаем каждую книгу в Response
+                    .toList();
+    }
+
+    public List<OrderResponse> getByUsername(String username) {
+            return orderRepository.findAllByUser_Username(username)
+                    .stream()
+                    .map(OrderResponse::fromEntity)
+                    .toList();
     }
 
     public OrderResponse getOrderById(Long id) {

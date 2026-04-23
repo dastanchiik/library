@@ -1,6 +1,8 @@
 package org.example.library.service;
 
+import jakarta.persistence.EntityNotFoundException;
 import org.example.library.dto.request.UserRegisterRequest;
+import org.example.library.dto.request.UserRequest;
 import org.example.library.dto.response.BookResponse;
 import org.example.library.dto.response.OrderResponse;
 import org.example.library.dto.response.UserResponse;
@@ -137,25 +139,54 @@ public class UserService {
         return response;
     }
 
-    public UserResponse updateUser(Long id, UserRegisterRequest request) {
+    public UserResponse updateUser(Long id, UserRequest request) {
+        // 1. Ищем пользователя или выбрасываем четкое исключение
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Пользователь не найден"));
+                .orElseThrow(() -> new EntityNotFoundException("Пользователь с ID " + id + " не найден"));
 
+        // 2. Проверка на дубликат Email (если email изменился)
+        if (!user.getEmail().equals(request.getEmail()) && userRepository.existsByEmail(request.getEmail())) {
+            throw new RuntimeException("Этот Email уже занят другим пользователем");
+        }
+
+        // 3. Обновляем основные поля
         user.setFullName(request.getFullName());
         user.setEmail(request.getEmail());
-        user.setUsername(request.getUsername());
 
-        if (request.getPassword() != null && !request.getPassword().isEmpty()) {
+        // Если у тебя в модели есть поле username, обновляем и его
+        if (request.getUsername() != null) {
+            user.setUsername(request.getUsername());
+        }
+
+        // 4. Обновляем роль и баланс (те поля, которые мы видели на фронтенде)
+        if (request.getRole() != null) {
+            user.setRole(request.getRole());
+        }
+
+        if (request.getBalance() != null) {
+            user.setBalance(request.getBalance());
+        }
+
+        // 5. Безопасное обновление пароля
+        if (request.getPassword() != null && !request.getPassword().trim().isEmpty()) {
             user.setPassword(passwordEncoder.encode(request.getPassword()));
         }
 
+        // 6. Сохраняем
         User savedUser = userRepository.save(user);
 
+        // 7. Превращаем в Response (лучше вынести в отдельный метод-маппер)
+        return mapToResponse(savedUser);
+    }
+
+    // Вспомогательный метод для чистоты кода
+    private UserResponse mapToResponse(User user) {
         UserResponse response = new UserResponse();
-        response.setId(savedUser.getId());
-        response.setFullName(savedUser.getFullName());
-        response.setEmail(savedUser.getEmail());
-        response.setBalance(savedUser.getBalance());
+        response.setId(user.getId());
+        response.setFullName(user.getFullName());
+        response.setEmail(user.getEmail());
+        response.setRole(user.getRole()); // Добавил роль
+        response.setBalance(user.getBalance()); // Теперь баланс не будет приходить как undefined
         return response;
     }
 

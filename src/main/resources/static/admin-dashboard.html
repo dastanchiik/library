@@ -1,104 +1,128 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="ru" id="htmlRoot">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard - BookCloud</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class'
+        }
+    </script>
 </head>
-<body class="bg-gray-100">
+<body class="bg-gray-100 dark:bg-gray-900 transition-colors duration-300">
 
 <div class="flex h-screen">
-    <div class="w-64 bg-gray-900 text-white flex flex-col">
-        <div class="p-6 border-b border-gray-700">
+    <!-- Sidebar -->
+    <div class="w-64 bg-gray-900 dark:bg-gray-950 text-white flex flex-col">
+        <div class="p-6 border-b border-gray-700 dark:border-gray-800">
             <h1 class="text-2xl font-black">📚 BookCloud</h1>
-            <p class="text-gray-400 text-sm">Admin Panel</p>
+            <p class="text-gray-400 dark:text-gray-500 text-sm">Admin Panel</p>
         </div>
 
         <nav class="flex-1 p-6 space-y-2">
-            <a href="admin-dashboard.html" class="block px-4 py-3 bg-blue-600 rounded-lg font-semibold">📊 Dashboard</a>
-            <a href="admin-users.html" class="block px-4 py-3 text-gray-300 hover:bg-gray-800 rounded-lg">👥 Пользователи</a>
-            <a href="admin-books.html" class="block px-4 py-3 text-gray-300 hover:bg-gray-800 rounded-lg">📖 Книги</a>
-            <a href="admin-orders.html" class="block px-4 py-3 text-gray-300 hover:bg-gray-800 rounded-lg">📋 Заказы</a>
-            <a href="admin-categories.html" class="block px-4 py-3 text-gray-300 hover:bg-gray-800 rounded-lg">🏷️ Категории</a>
+            <a href="admin-dashboard.html" class="block px-4 py-3 text-gray-300 hover:bg-gray-800 rounded-lg transition">📊 Dashboard</a>
+            <!-- Новая кнопка Профиль -->
+            <a href="admin-profile.html" class="block px-4 py-3 text-gray-300 hover:bg-gray-800 rounded-lg transition">👤 Мой профиль</a>
+
+            <div class="my-4 border-t border-gray-800"></div> <!-- Разделитель -->
+
+            <a href="admin-users.html" class="block px-4 py-3 text-gray-300 hover:bg-gray-800 rounded-lg transition">👥 Пользователи</a>
+            <a href="admin-books.html" class="block px-4 py-3 text-gray-300 hover:bg-gray-800 rounded-lg transition">📖 Книги</a>
+            <a href="admin-orders.html" class="block px-4 py-3 text-gray-300 hover:bg-gray-800 rounded-lg transition">📋 Заказы</a>
+            <a href="admin-categories.html" class="block px-4 py-3 text-gray-300 hover:bg-gray-800 rounded-lg transition">🏷️ Категории</a>
         </nav>
 
-        <div class="p-6 border-t border-gray-700 space-y-2">
-            <a href="admin-profile.html" class="block px-4 py-3 text-gray-300 hover:bg-gray-800 rounded-lg">⚙️ Профиль</a>
+        <div class="p-6 border-t border-gray-700 dark:border-gray-800 space-y-2">
+            <!-- Кнопка переключения темы -->
+            <button onclick="toggleDarkMode()" class="w-full px-4 py-2 bg-gray-800 text-gray-300 rounded-lg text-sm border border-gray-700 hover:bg-gray-700 transition">
+                <span id="themeBtnText">🌙 Темный режим</span>
+            </button>
             <button onclick="logout()" class="w-full px-4 py-3 bg-red-600 hover:bg-red-700 rounded-lg font-semibold">🚪 Выход</button>
         </div>
     </div>
 
-    <div class="flex-1 flex flex-col">
-        <div class="bg-white shadow p-6 flex justify-between items-center">
-            <h2 class="text-3xl font-bold text-gray-900">Dashboard</h2>
+    <!-- Main Content -->
+    <div class="flex-1 flex flex-col overflow-hidden">
+        <!-- Header -->
+        <div class="bg-white dark:bg-gray-800 shadow-sm p-6 flex justify-between items-center border-b dark:border-gray-700 transition-colors">
+            <h2 class="text-3xl font-bold text-gray-900 dark:text-white">Dashboard</h2>
             <div class="flex items-center gap-4">
-                <span class="text-gray-600" id="currentUser">Администратор</span>
+                <span class="text-gray-600 dark:text-gray-300" id="currentUser">Администратор</span>
                 <div class="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold">A</div>
             </div>
         </div>
 
         <div class="flex-1 overflow-auto p-6">
-            <div class="grid grid-cols-4 gap-6 mb-8">
-                <div class="bg-white rounded-lg shadow p-6 border-b-4 border-blue-500">
+            <!-- Stats Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <!-- User Card -->
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6 border-b-4 border-blue-500 transition-colors">
                     <div class="flex items-center justify-between">
                         <div>
-                            <p class="text-gray-600 text-sm">Всего пользователей</p>
-                            <p class="text-3xl font-bold text-gray-900" id="totalUsers">0</p>
+                            <p class="text-gray-500 dark:text-gray-400 text-sm font-medium">Всего пользователей</p>
+                            <p class="text-3xl font-bold text-gray-900 dark:text-white" id="totalUsers">0</p>
                         </div>
                         <div class="text-4xl">👥</div>
                     </div>
                 </div>
 
-                <div class="bg-white rounded-lg shadow p-6 border-b-4 border-indigo-500">
+                <!-- Books Card -->
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6 border-b-4 border-indigo-500 transition-colors">
                     <div class="flex items-center justify-between">
                         <div>
-                            <p class="text-gray-600 text-sm">Всего книг</p>
-                            <p class="text-3xl font-bold text-gray-900" id="totalBooks">0</p>
+                            <p class="text-gray-500 dark:text-gray-400 text-sm font-medium">Всего книг</p>
+                            <p class="text-3xl font-bold text-gray-900 dark:text-white" id="totalBooks">0</p>
                         </div>
                         <div class="text-4xl">📖</div>
                     </div>
                 </div>
 
-                <div class="bg-white rounded-lg shadow p-6 border-b-4 border-yellow-500">
+                <!-- Orders Card -->
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6 border-b-4 border-yellow-500 transition-colors">
                     <div class="flex items-center justify-between">
                         <div>
-                            <p class="text-gray-600 text-sm">Всего заказов</p>
-                            <p class="text-3xl font-bold text-gray-900" id="totalOrders">0</p>
+                            <p class="text-gray-500 dark:text-gray-400 text-sm font-medium">Всего заказов</p>
+                            <p class="text-3xl font-bold text-gray-900 dark:text-white" id="totalOrders">0</p>
                         </div>
                         <div class="text-4xl">📋</div>
                     </div>
                 </div>
 
-                <div class="bg-white rounded-lg shadow p-6 border-b-4 border-green-500">
+                <!-- Revenue Card -->
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6 border-b-4 border-green-500 transition-colors">
                     <div class="flex items-center justify-between">
                         <div>
-                            <p class="text-gray-600 text-sm">Общий доход</p>
-                            <p class="text-3xl font-bold text-green-600" id="totalRevenue">0 сом</p>
+                            <p class="text-gray-500 dark:text-gray-400 text-sm font-medium">Общий доход</p>
+                            <p class="text-3xl font-bold text-green-600 dark:text-green-400" id="totalRevenue">0 сом</p>
                         </div>
                         <div class="text-4xl">💰</div>
                     </div>
                 </div>
             </div>
 
-            <div class="grid grid-cols-2 gap-6">
-                <div class="bg-white rounded-lg shadow p-6">
-                    <h3 class="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">📋 Последние заказы</h3>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Recent Orders Section -->
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6 transition-colors">
+                    <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">📋 Последние заказы</h3>
                     <div id="recentOrders" class="space-y-3">
                         <p class="text-gray-400 text-sm italic">Загрузка...</p>
                     </div>
                 </div>
 
-                <div class="bg-white rounded-lg shadow p-6">
-                    <h3 class="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">👥 Новые пользователи</h3>
+                <!-- Recent Users Section -->
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6 transition-colors">
+                    <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">👥 Новые пользователи</h3>
                     <div id="recentUsers" class="space-y-3">
                         <p class="text-gray-400 text-sm italic">Загрузка...</p>
                     </div>
                 </div>
             </div>
 
-            <div class="bg-white rounded-lg shadow p-6 mt-6">
-                <h3 class="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">🏆 Популярные книги</h3>
+            <!-- Top Books Section -->
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6 mt-6 transition-colors">
+                <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">🏆 Популярные книги</h3>
                 <div id="topBooks" class="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <p class="text-gray-400 text-sm italic">Загрузка...</p>
                 </div>
@@ -108,118 +132,154 @@
 </div>
 
 <script>
-    // 1. Получаем токен динамически через функцию, чтобы всегда иметь актуальное значение
+    // --- Логика Темы (Dark Mode) ---
+    function initTheme() {
+        const isDark = localStorage.getItem('darkMode') === 'true';
+        if (isDark) {
+            document.getElementById('htmlRoot').classList.add('dark');
+            document.getElementById('themeBtnText').textContent = '☀️ Светлый режим';
+        }
+    }
+    function toggleDarkMode() {
+        const isDark = document.getElementById('htmlRoot').classList.toggle('dark');
+        localStorage.setItem('darkMode', isDark);
+        document.getElementById('themeBtnText').textContent = isDark ? '☀️ Светлый режим' : '🌙 Темный режим';
+    }
+    initTheme();
+
+    // --- API и Авторизация ---
     const getToken = () => localStorage.getItem('token');
+    const getHeaders = () => ({
+        'Authorization': 'Bearer ' + getToken(),
+        'Content-Type': 'application/json'
+    });
 
     function checkAuth() {
         const token = getToken();
-        // Проверяем не только наличие, но и чтобы это не была строка "undefined" или "null"
         if (!token || token === 'undefined' || token === 'null') {
-            console.warn("Доступ запрещен: токен отсутствует");
             window.location.replace('admin-login.html');
         }
     }
 
     function logout() {
-        console.log("Выход из системы...");
         localStorage.clear();
         window.location.replace('admin-login.html');
     }
 
-    // 2. Универсальная функция для fetch
     async function apiRequest(url) {
-        const token = getToken();
-
         try {
-            const response = await fetch(url, {
-                headers: {
-                    'Authorization': 'Bearer ' + token, // Проверь, что в Spring Security нет двойного Bearer
-                    'Content-Type': 'application/json'
-                }
-            });
-
-            // Если сервер говорит "Стоп", значит токен просрочен или неверен
+            const response = await fetch(url, { headers: getHeaders() });
             if (response.status === 401 || response.status === 403) {
-                console.error("Ошибка авторизации (401/403). Токен невалиден.");
                 logout();
                 return null;
             }
-
-            if (!response.ok) {
-                console.error(`Ошибка запроса: ${response.status}`);
-                return null;
-            }
-
+            if (!response.ok) return null;
             return await response.json();
         } catch (error) {
-            console.error("Критическая ошибка сети:", error);
+            console.error("Ошибка сети:", error);
             return null;
         }
     }
 
-    async function loadDashboardData() {
-        const token = getToken();
-        if (!token) return;
+    // --- Рендеринг данных ---
+    async function renderPopularBooks() {
+        // Получаем все книги
+        const books = await apiRequest('/api/admin/books');
+        const container = document.getElementById('topBooks');
 
-        try {
-            // Загрузка статистики
-            // ВАЖНО: Если этого эндпоинта /api/admin/stats еще нет в Java, закомментируй эту часть
-            const stats = await apiRequest('/api/admin/stats');
-            if (stats) {
-                document.getElementById('totalUsers').textContent = stats.totalUsers || 0;
-                document.getElementById('totalBooks').textContent = stats.totalBooks || 0;
-                document.getElementById('totalOrders').textContent = stats.totalOrders || 0;
-                document.getElementById('totalRevenue').textContent = (stats.totalRevenue || 0) + ' сом';
-            }
+        if (books && books.length > 0) {
+            // 1. Сортируем книги по количеству продаж (salesCount) от большего к меньшему
+            // Если salesCount нет, можно использовать (book.id % 10) для теста или любое другое числовое поле
+            const sortedBooks = books.sort((a, b) => (b.salesCount || 0) - (a.salesCount || 0));
 
-            // Загрузка последних пользователей для проверки связи
-            const users = await apiRequest('/api/admin/users');
-            if (users) {
-                const recentUsersHtml = users.slice(-5).reverse().map(user => `
-                    <div class="border-l-4 border-green-500 bg-green-50 p-3 rounded-r-lg">
-                        <p class="font-bold text-gray-900">${user.fullName || 'Без имени'}</p>
-                        <p class="text-xs text-gray-600 italic">${user.email}</p>
-                        <p class="text-xs font-bold text-green-700 mt-1 uppercase">${user.role}</p>
+            // 2. Берем первые 3 книги
+            container.innerHTML = sortedBooks.slice(0, 3).map((book, index) => {
+                // Определяем цвет медали в зависимости от места
+                const medals = [
+                    { color: 'bg-yellow-400', text: '🥇 1 место' },
+                    { color: 'bg-gray-300', text: '🥈 2 место' },
+                    { color: 'bg-orange-400', text: '🥉 3 место' }
+                ];
+
+                return `
+                <div class="group bg-white dark:bg-gray-700/50 p-5 rounded-3xl border border-gray-100 dark:border-gray-600 flex flex-col items-center text-center relative transition-all hover:shadow-xl hover:-translate-y-1">
+                    <!-- Бейдж места -->
+                    <div class="absolute -top-3 left-1/2 -translate-x-1/2 ${medals[index].color} text-gray-900 text-[10px] font-black px-3 py-1 rounded-full shadow-sm uppercase">
+                        ${medals[index].text}
                     </div>
-                `).join('');
-                document.getElementById('recentUsers').innerHTML = recentUsersHtml || '<p class="text-gray-500 text-sm">Пользователей пока нет</p>';
 
-                // Отобразим имя текущего админа из токена или списка
-                document.getElementById('currentUser').textContent = "Админ: " + (localStorage.getItem('userId') || 'Admin');
-            }
-            // Загрузка последних заказов
-            const orders = await apiRequest('/api/admin/orders');
-            if (orders) {
-                const recentOrdersHtml = orders.slice(-5).reverse().map(order => `
-        <div class="border-l-4 border-blue-500 bg-blue-50 p-3 rounded-r-lg flex justify-between items-center">
-            <div>
-                <p class="font-bold text-gray-900">Заказ #${order.orderId || order.id}</p>
-                <p class="text-xs text-gray-600">${order.customerName || 'Клиент'}</p>
-            </div>
-            <div class="text-right">
-                <p class="text-sm font-bold text-blue-700">${order.totalPrice || order.price} сом</p>
-                <p class="text-[10px] uppercase font-black text-gray-500">${order.status}</p>
-            </div>
-        </div>
-    `).join('');
-                document.getElementById('recentOrders').innerHTML = recentOrdersHtml || '<p class="text-gray-500 text-sm">Заказов пока нет</p>';
-            }
+                    <div class="w-20 h-28 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl mb-4 flex items-center justify-center text-3xl text-white shadow-lg group-hover:scale-105 transition-transform">
+                        📖
+                    </div>
 
-        } catch (error) {
-            console.error('Ошибка в loadDashboardData:', error);
+                    <h4 class="font-black text-gray-900 dark:text-white text-sm mb-1 line-clamp-2">${book.title}</h4>
+                    <p class="text-[11px] text-gray-500 dark:text-gray-400 mb-3">${book.author || 'Автор не указан'}</p>
+
+                    <div class="mt-auto w-full pt-3 border-t border-gray-100 dark:border-gray-600">
+                        <div class="flex justify-between items-center px-2">
+                            <span class="text-blue-600 dark:text-blue-400 font-black text-sm">${book.price} сом</span>
+                            <span class="text-[10px] bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-300 px-2 py-1 rounded-lg font-bold">
+                                📦 ${book.salesCount || 0} шт.
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            `;
+            }).join('');
+        } else {
+            container.innerHTML = `
+            <div class="col-span-full py-10 text-center text-gray-400 italic">
+                Нет данных о продажах
+            </div>
+        `;
         }
     }
 
-    // Инициализация
-    checkAuth();
+    async function renderRecentOrders() {
+        const orders = await apiRequest('/api/admin/orders');
+        const container = document.getElementById('recentOrders');
 
-    // Запускаем загрузку данных только после проверки авторизации
-    window.addEventListener('DOMContentLoaded', () => {
-        loadDashboardData();
-    });
+        if (orders && orders.length > 0) {
+            container.innerHTML = orders.slice(-5).reverse().map(order => `
+                <div class="border-l-4 border-blue-500 bg-blue-50 dark:bg-blue-900/20 p-3 rounded-r-lg flex justify-between items-center shadow-sm">
+                    <div>
+                        <p class="font-bold text-gray-900 dark:text-white text-sm">Заказ #${order.orderId || order.id}</p>
+                        <p class="text-[11px] text-gray-600 dark:text-gray-400">${order.customerName || 'Клиент'}</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-sm font-bold text-blue-700 dark:text-blue-400">${order.totalPrice} сом</p>
+                    </div>
+                </div>
+            `).join('');
+        }
+    }
 
-    // Обновляем раз в минуту
-    setInterval(loadDashboardData, 60000);
+    async function loadDashboardData() {
+        checkAuth();
+        const stats = await apiRequest('/api/admin/stats');
+        if (stats) {
+            document.getElementById('totalUsers').textContent = stats.totalUsers || 0;
+            document.getElementById('totalBooks').textContent = stats.totalBooks || 0;
+            document.getElementById('totalOrders').textContent = stats.totalOrders || 0;
+            document.getElementById('totalRevenue').textContent = (stats.totalRevenue || 0) + ' сом';
+        }
+
+        const users = await apiRequest('/api/admin/users');
+        if (users) {
+            document.getElementById('recentUsers').innerHTML = users.slice(-5).reverse().map(user => `
+                <div class="border-l-4 border-green-500 bg-green-50 dark:bg-green-900/20 p-3 rounded-r-lg shadow-sm">
+                    <p class="font-bold text-gray-900 dark:text-white text-sm">${user.fullName || 'Без имени'}</p>
+                    <p class="text-[11px] text-gray-600 dark:text-gray-400">${user.email}</p>
+                </div>
+            `).join('');
+        }
+
+        await renderRecentOrders();
+        await renderPopularBooks();
+    }
+
+    window.addEventListener('DOMContentLoaded', loadDashboardData);
+    setInterval(loadDashboardData, 30000);
 </script>
 
 </body>

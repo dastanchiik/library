@@ -23,11 +23,10 @@ public class BookService {
     public List<BookResponse> getAllBooks() {
         return bookRepository.findAll()
                 .stream()
-                .map(BookResponse::fromEntity) // Превращаем каждую книгу в Response
+                .map(BookResponse::fromEntity)
                 .toList();
     }
 
-    // Твой генератор ISBN - отличная фишка!
     private String generateIsbn(Random random) {
         return String.format("%03d-%d-%07d-%d-%d",
                 random.nextInt(101, 999),
@@ -53,23 +52,23 @@ public class BookService {
         book.setAuthor(bookRequest.getAuthor());
         book.setPrice(bookRequest.getPrice());
         book.setCategory(bookRequest.getCategory());
-        book.setImageURL(bookRequest.getImageUrl());
+        book.setImageURL(bookRequest.getImageURL());
         book.setDescription(bookRequest.getDescription());
-        book.setStock(bookRequest.getStock()); // Не забудь добавить в BookRequest поле stock
+        book.setStock(bookRequest.getStock());
         book.setIsbn(isbn);
 
         return bookRepository.save(book);
     }
 
     public String updateBook(Long id, BookRequest bookRequest) {
-        Book book = bookRepository.findById(id).orElse(null);
+        Book book = bookRepository.findById(id).orElseThrow(() -> new RuntimeException("Книга не найдена"));
         book.setTitle(bookRequest.getTitle());
         book.setAuthor(bookRequest.getAuthor());
         book.setPrice(bookRequest.getPrice());
         book.setCategory(bookRequest.getCategory());
-        book.setImageURL(bookRequest.getImageUrl());
+        book.setImageURL(bookRequest.getImageURL());
         book.setDescription(bookRequest.getDescription());
-        book.setStock(bookRequest.getStock()); // И наличие
+        book.setStock(bookRequest.getStock());
         bookRepository.save(book);
         return "Book updated";
     }
@@ -84,15 +83,22 @@ public class BookService {
         return BookResponse.fromEntity(book);
     }
 
-    public List<Book> searchBooks(String title){
-        return bookRepository.findByTitleContainingIgnoreCase(title);
-    }
-
-    public List<BookResponse> searchBooksByCategory(Category category){
-        return bookRepository.findAllByCategory(category)
+    public List<BookResponse> searchBooks(String title){
+        return bookRepository.findByTitleContainingIgnoreCase(title)
                 .stream()
-                .map(BookResponse::fromEntity) // Превращаем каждую книгу в Response
+                .map(BookResponse::fromEntity)
                 .toList();
     }
-}
 
+    public List<BookResponse> getBooksByCategory(String categoryName) {
+        try {
+            Category category = Category.valueOf(categoryName.toUpperCase());
+            return bookRepository.findAllByCategory(category)
+                    .stream()
+                    .map(BookResponse::fromEntity)
+                    .toList();
+        } catch (IllegalArgumentException e) {
+            return List.of();
+        }
+    }
+}

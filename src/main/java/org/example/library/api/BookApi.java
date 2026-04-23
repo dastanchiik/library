@@ -47,14 +47,11 @@ public class BookApi {
 
     @GetMapping("/search/book/title")
     public List<BookResponse> search(@RequestParam String query) {
-        return bookService.searchBooks(query)
-                .stream()
-                .map(BookResponse::fromEntity) // Превращаем каждую книгу в Response
-                .toList();
+        return bookService.searchBooks(query);
     }
 
     @GetMapping("/search/books/category")
     public List<BookResponse> getBooksByCategory(@RequestParam Category category) {
-        return bookService.searchBooksByCategory(category);
+        return bookService.getBooksByCategory(category.name());
     }
 }
