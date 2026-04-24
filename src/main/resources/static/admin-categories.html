@@ -1,153 +1,109 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="ru" id="htmlRoot">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Категории - Admin</title>
+    <title>Категории - BookCloud Admin</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
-                        dark: {
-                            bg: '#1a1a1a',
-                            card: '#2d2d2d',
-                            text: '#e1e1e1'
-                        }
-                    }
-                }
-            }
-        }
+        tailwind.config = { darkMode: 'class' }
     </script>
 </head>
-<body class="bg-gray-100 dark:bg-dark-bg min-h-screen transition-colors duration-200">
-    <div class="flex">
-        <!-- Sidebar -->
-        <aside class="w-64 bg-white dark:bg-dark-card shadow-lg min-h-screen flex flex-col">
-            <div class="p-6">
-                <div class="flex items-center space-x-3">
-                    <div class="w-10 h-10 bg-indigo-600 rounded-lg flex items-center justify-center">
-                        <i class="fas fa-book-open text-white"></i>
-                    </div>
-                    <span class="text-xl font-bold dark:text-white">AdminPanel</span>
-                </div>
-            </div>
+<body class="bg-gray-100 dark:bg-gray-900 transition-colors duration-300">
 
-            <nav class="flex-grow px-4 space-y-2">
-                <a href="admin-dashboard.html" class="flex items-center space-x-3 p-3 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 transition-all">
-                    <i class="fas fa-chart-line w-5"></i>
-                    <span>Дашборд</span>
-                </a>
-                <a href="admin-books.html" class="flex items-center space-x-3 p-3 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 transition-all">
-                    <i class="fas fa-book w-5"></i>
-                    <span>Книги</span>
-                </a>
-                <a href="admin-categories.html" class="flex items-center space-x-3 p-3 rounded-lg bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 font-medium">
-                    <i class="fas fa-tags w-5"></i>
-                    <span>Категории</span>
-                </a>
-                <a href="admin-orders.html" class="flex items-center space-x-3 p-3 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 transition-all">
-                    <i class="fas fa-shopping-cart w-5"></i>
-                    <span>Заказы</span>
-                </a>
-            </nav>
-
-            <div class="p-4 border-t dark:border-gray-800">
-                <button onclick="logout()" class="flex items-center space-x-3 p-3 w-full rounded-lg text-red-500 hover:bg-red-50 dark:hover:bg-red-900/10 transition-all">
-                    <i class="fas fa-sign-out-alt w-5"></i>
-                    <span>Выйти</span>
-                </button>
-            </div>
-        </aside>
-
-        <!-- Main Content -->
-        <main class="flex-grow p-8">
-            <header class="flex justify-between items-center mb-8">
-                <div>
-                    <h1 class="text-2xl font-bold dark:text-white">Категории книг</h1>
-                    <p class="text-gray-500 dark:text-gray-400">Управление жанрами и разделами библиотеки</p>
-                </div>
-                <div class="flex items-center space-x-4">
-                    <button onclick="toggleDarkMode()" class="p-2 rounded-lg bg-white dark:bg-dark-card shadow-sm dark:text-gray-400">
-                        <i class="fas fa-moon dark:hidden"></i>
-                        <i class="fas fa-sun hidden dark:block"></i>
-                    </button>
-                </div>
-            </header>
-
-            <div id="categoriesGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                <!-- Категории будут загружены здесь -->
-            </div>
-        </main>
+<div class="flex h-screen">
+    <!-- Sidebar -->
+    <div class="w-64 bg-gray-900 dark:bg-gray-950 text-white flex flex-col">
+        <div class="p-6 border-b border-gray-700">
+            <h1 class="text-2xl font-black">📚 BookCloud</h1>
+            <p class="text-gray-400 text-sm">Admin Panel</p>
+        </div>
+        <nav class="flex-1 p-6 space-y-2">
+            <a href="admin-dashboard.html" class="block px-4 py-3 text-gray-300 hover:bg-gray-800 rounded-lg transition">📊 Dashboard</a>
+            <a href="admin-profile.html" class="block px-4 py-3 text-gray-300 hover:bg-gray-800 rounded-lg transition">👤 Мой профиль</a>
+            <div class="my-4 border-t border-gray-800"></div>
+            <a href="admin-users.html" class="block px-4 py-3 text-gray-300 hover:bg-gray-800 rounded-lg transition">👥 Пользователи</a>
+            <a href="admin-books.html" class="block px-4 py-3 text-gray-300 hover:bg-gray-800 rounded-lg transition">📖 Книги</a>
+            <a href="admin-orders.html" class="block px-4 py-3 text-gray-300 hover:bg-gray-800 rounded-lg transition">📋 Заказы</a>
+            <a href="admin-categories.html" class="block px-4 py-3 bg-blue-600 text-white rounded-lg transition">🏷️ Категории</a>
+        </nav>
+        <div class="p-6 border-t border-gray-700 space-y-2">
+            <button onclick="toggleDarkMode()" class="w-full px-4 py-2 bg-gray-800 text-gray-300 rounded-lg text-sm border border-gray-700 hover:bg-gray-700 transition">
+                <span id="themeBtnText">🌙 Темный режим</span>
+            </button>
+            <button onclick="logout()" class="w-full px-4 py-3 bg-red-600 hover:bg-red-700 rounded-lg font-semibold transition">🚪 Выход</button>
+        </div>
     </div>
 
-    <script>
-        const token = localStorage.getItem('token');
-        if (!token) window.location.href = 'admin-login.html';
+    <!-- Main Content -->
+    <div class="flex-1 flex flex-col overflow-hidden">
+        <div class="bg-white dark:bg-gray-800 shadow-sm p-6 flex justify-between items-center border-b dark:border-gray-700">
+            <div>
+                <h2 class="text-3xl font-bold text-gray-900 dark:text-white">Категории книг</h2>
+                <p class="text-gray-500 dark:text-gray-400 text-sm">Управление жанрами библиотеки</p>
+            </div>
+            <div class="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold">A</div>
+        </div>
 
-        function toggleDarkMode() {
-            document.documentElement.classList.toggle('dark');
-            localStorage.setItem('theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
+        <div class="flex-1 overflow-auto p-8" id="categoriesGrid">
+            <!-- Categories will be here -->
+        </div>
+    </div>
+</div>
+
+<script>
+    function initTheme() {
+        if (localStorage.getItem('darkMode') === 'true') {
+            document.getElementById('htmlRoot').classList.add('dark');
+            document.getElementById('themeBtnText').textContent = '☀️ Светлый режим';
         }
+    }
+    initTheme();
 
-        if (localStorage.getItem('theme') === 'dark') document.documentElement.classList.add('dark');
+    function toggleDarkMode() {
+        const isDark = document.getElementById('htmlRoot').classList.toggle('dark');
+        localStorage.setItem('darkMode', isDark);
+        document.getElementById('themeBtnText').textContent = isDark ? '☀️ Светлый режим' : '🌙 Темный режим';
+    }
 
-        const categories = [
-            { id: 'FICTION', name: 'Художественная', icon: 'fa-feather', count: 0, color: 'bg-blue-500' },
-            { id: 'NON_FICTION', name: 'Научно-популярная', icon: 'fa-flask', count: 0, color: 'bg-green-500' },
-            { id: 'FANTASY', name: 'Фэнтези', icon: 'fa-magic', count: 0, color: 'bg-purple-500' },
-            { id: 'MYSTERY', name: 'Детектив', icon: 'fa-user-secret', count: 0, color: 'bg-gray-700' },
-            { id: 'ROMANCE', name: 'Романтика', icon: 'fa-heart', count: 0, color: 'bg-pink-500' },
-            { id: 'THRILLER', name: 'Триллер', icon: 'fa-skull', count: 0, color: 'bg-red-600' },
-            { id: 'SCIENCE', name: 'Наука', icon: 'fa-atom', count: 0, color: 'bg-cyan-500' },
-            { id: 'HISTORY', name: 'История', icon: 'fa-landmark', count: 0, color: 'bg-amber-600' },
-            { id: 'BUSINESS', name: 'Бизнес', icon: 'fa-briefcase', count: 0, color: 'bg-indigo-600' },
-            { id: 'KIDS', name: 'Детская', icon: 'fa-child', count: 0, color: 'bg-orange-400' }
-        ];
+    function logout() { localStorage.clear(); window.location.replace('admin-login.html'); }
 
-        async function fetchCounts() {
-            try {
-                // В реальном приложении здесь был бы запрос к API для получения количества книг в каждой категории
-                renderCategories();
-            } catch (error) {
-                console.error(error);
-            }
-        }
+    const categories = [
+        { name: 'ФАНТАСТИКА', icon: '🚀', color: 'from-blue-500 to-indigo-600' },
+        { name: 'ДЕТЕКТИВ', icon: '🔍', color: 'from-gray-700 to-gray-900' },
+        { name: 'РОМАН', icon: '❤️', color: 'from-pink-500 to-rose-600' },
+        { name: 'УЖАСЫ', icon: '👻', color: 'from-red-600 to-black' },
+        { name: 'КЛАССИКА', icon: '📜', color: 'from-amber-600 to-orange-700' },
+        { name: 'ПСИХОЛОГИЯ', icon: '🧠', color: 'from-teal-500 to-emerald-600' },
+        { name: 'БИЗНЕС', icon: '💼', color: 'from-indigo-600 to-blue-700' },
+        { name: 'ПРОГРАММИРОВАНИЕ', icon: '💻', color: 'from-cyan-500 to-blue-500' }
+    ];
 
-        function renderCategories() {
-            const grid = document.getElementById('categoriesGrid');
-            grid.innerHTML = categories.map(cat => `
-                <div class="bg-white dark:bg-dark-card rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden group">
-                    <div class="h-2 ${cat.color}"></div>
-                    <div class="p-6">
-                        <div class="flex items-center justify-between mb-4">
-                            <div class="w-12 h-12 ${cat.color} bg-opacity-10 rounded-xl flex items-center justify-center text-xl text-white">
-                                <i class="fas ${cat.icon} ${cat.color.replace('bg-', 'text-')}"></i>
-                            </div>
-                            <span class="text-xs font-bold text-gray-400 uppercase tracking-widest">Жанр</span>
+    function renderCategories() {
+        const grid = document.getElementById('categoriesGrid');
+        grid.innerHTML = `
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                ${categories.map(cat => `
+                    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden group">
+                        <div class="h-32 bg-gradient-to-br ${cat.color} flex items-center justify-center text-5xl">
+                            ${cat.icon}
                         </div>
-                        <h3 class="text-xl font-bold text-gray-800 dark:text-white mb-2">${cat.name}</h3>
-                        <p class="text-gray-500 dark:text-gray-400 text-sm mb-6">Управляйте книгами в разделе "${cat.name.toLowerCase()}".</p>
-                        
-                        <!-- Исправленная ссылка с параметром ?category= -->
-                        <a href="admin-books.html?category=${cat.id}" class="flex items-center justify-between p-3 rounded-xl bg-gray-50 dark:bg-gray-800 hover:bg-indigo-600 hover:text-white transition-all group-hover:bg-indigo-600 group-hover:text-white">
-                            <span class="font-medium">Перейти к книгам</span>
-                            <i class="fas fa-arrow-right"></i>
-                        </a>
+                        <div class="p-6">
+                            <h3 class="text-xl font-black text-gray-900 dark:text-white mb-2">${cat.name}</h3>
+                            <p class="text-gray-500 dark:text-gray-400 text-sm mb-6">Просмотр и управление книгами в разделе "${cat.name.toLowerCase()}".</p>
+                            
+                            <a href="admin-books.html?category=${encodeURIComponent(cat.name)}" class="flex items-center justify-between p-4 rounded-xl bg-gray-50 dark:bg-gray-700 hover:bg-blue-600 hover:text-white transition-all font-bold">
+                                <span>Перейти к книгам</span>
+                                <span>→</span>
+                            </a>
+                        </div>
                     </div>
-                </div>
-            `).join('');
-        }
+                `).join('')}
+            </div>
+        `;
+    }
 
-        function logout() {
-            localStorage.removeItem('token');
-            window.location.href = 'admin-login.html';
-        }
-
-        fetchCounts();
-    </script>
+    window.addEventListener('DOMContentLoaded', renderCategories);
+</script>
 </body>
 </html>

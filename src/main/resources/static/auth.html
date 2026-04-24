@@ -73,22 +73,19 @@
   async function handleAuth(event) {
     event.preventDefault();
 
-    // Берем данные из полей
-    const identifier = document.getElementById('username').value; // Тут может быть и почта, и логин
+    const identifier = document.getElementById('username').value;
     const password = document.getElementById('password').value;
 
     let url = currentMode === 'login' ? '/api/auth/login' : '/api/auth/register';
 
-    // Формируем объект ТАК, как его ждет твой LoginRequest в Java
     let bodyData = {
-      email: identifier, // Твой бэкенд в LoginRequest скорее всего ждет поле "email"
+      email: identifier,
       password: password
     };
 
     if (currentMode === 'register') {
       bodyData.fullName = document.getElementById('fullName').value;
       bodyData.email = document.getElementById('email').value;
-      // Если в регистрации юзернейм и почта - разные поля, добавь:
       bodyData.username = identifier;
     }
 
@@ -103,12 +100,11 @@
 
       if (response.ok) {
         localStorage.setItem('token', data.token);
-        localStorage.setItem('userId', data.id); // Теперь ID точно сохранится
+        localStorage.setItem('userId', data.id);
 
         alert("Успешно!");
         location.href = 'index.html';
       } else {
-        // Выведи сообщение из бэкенда, чтобы понять, что не так
         alert("Ошибка: " + (data.message || "Неверный логин или пароль"));
       }
     } catch (err) {
@@ -117,7 +113,6 @@
     }
   }
 
-  // ===== ТЁМНЫЙ РЕЖИМ =====
   function initDarkMode() {
       const isDark = localStorage.getItem('darkMode') === 'true';
       if (isDark) {

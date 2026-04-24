@@ -14,7 +14,6 @@ public class BookRequest {
     private String title;
     private String author;
     private int price;
-//    @JsonIgnore
     private Category category;
     private int salesCount;
     private String imageURL;

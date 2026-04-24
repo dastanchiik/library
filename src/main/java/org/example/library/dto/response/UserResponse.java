@@ -4,7 +4,6 @@ import lombok.*;
 import org.example.library.model.Role;
 import org.example.library.model.User;
 
-//@Data
 @Getter
 @Setter
 @NoArgsConstructor

@@ -32,12 +32,11 @@ public class AuthApi {
     public JWTResponse performLogin(@RequestBody LoginRequest loginResponse) {
         return authService.authenticate( loginResponse );
     }
-    @PostMapping("admin/login") // путь будет /api/auth/login
+    @PostMapping("admin/login")
     public ResponseEntity<?> adminLogin(@RequestBody Map<String, String> loginData) {
         String email = loginData.get("email");
         String password = loginData.get("password");
 
-        // вызываешь сервис...
         return ResponseEntity.ok(authService.loginAdmin(email, password));
     }
 

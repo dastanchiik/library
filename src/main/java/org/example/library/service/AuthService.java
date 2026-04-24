@@ -8,6 +8,7 @@ import org.example.library.dto.response.JWTResponse;
 import org.example.library.model.Role;
 import org.example.library.model.User;
 import org.example.library.repositories.UserRepository;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -27,6 +28,7 @@ public class AuthService {
     }
 
     public JWTResponse registerUser(UserRegisterRequest userRegisterRequest) {
+
         User user = new User();
         user.setUsername(userRegisterRequest.getUsername());
         user.setFullName(userRegisterRequest.getFullName());
@@ -52,10 +54,10 @@ public class AuthService {
 
         );
     }
+
+
     public JWTResponse authenticate(LoginRequest loginRequest) {
         User user = new User();
-//        repository.findByEmail(loginRequest.getEmail()).orElseThrow(() ->
-//                new RuntimeException("User with email: " + loginRequest.getEmail() + " not found!"));
         if (repository.existsByEmail(loginRequest.getEmail())) {
             user = repository.findByEmail(loginRequest.getEmail()).orElseThrow(() ->
                     new RuntimeException("User with email: " + loginRequest.getEmail() + " not found!"));
@@ -83,21 +85,17 @@ public class AuthService {
     }
 
     public JWTResponse loginAdmin(String email, String password) {
-        // 1. Проверка на email админа (хардкод допустим, если это единственная точка входа)
         if (!"admin@bookcloud.com".equalsIgnoreCase(email)) {
             throw new BadCredentialsException("Доступ запрещен: вы не администратор");
         }
 
-        // 2. Ищем админа в базе
         User admin = repository.findByEmail(email)
                 .orElseThrow(() -> new EntityNotFoundException("Учетная запись администратора не найдена в системе"));
 
-        // 3. Проверяем пароль
         if (!passwordEncoder.matches(password, admin.getPassword())) {
             throw new BadCredentialsException("Неверный пароль администратора");
         }
 
-        // 4. Генерируем токен
         String token = jwtUtils.generateToken(admin.getEmail());
 
         return new JWTResponse(

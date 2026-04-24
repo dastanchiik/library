@@ -32,7 +32,6 @@ public class AdminApi {
     private final BookService bookService;
     private final ImageUploadService imageUploadService;
 
-    // ===== ПОЛЬЗОВАТЕЛИ =====
     @GetMapping("/users")
     public ResponseEntity<List<UserResponse>> getAllUsers() {
         return ResponseEntity.ok(adminService.getAllUsersForAdmin());
@@ -59,7 +58,6 @@ public class AdminApi {
         return ResponseEntity.ok(Map.of("message", "Пользователь удален успешно"));
     }
 
-    // ===== КАТЕГОРИИ =====
     @GetMapping("/categories")
     public ResponseEntity<List<String>> getAllCategories() {
         return ResponseEntity.ok(
@@ -69,7 +67,6 @@ public class AdminApi {
         );
     }
 
-    // ===== КНИГИ =====
     @GetMapping("/search/book/title")
     public ResponseEntity<List<BookResponse>> getAllBooksByTitle(@RequestParam String title) {
         return ResponseEntity.ok(bookService.searchBooks(title));
@@ -119,7 +116,6 @@ public class AdminApi {
         return ResponseEntity.ok(Map.of("message", "Книга удалена"));
     }
 
-    // ===== ЗАКАЗЫ =====
     @GetMapping("/orders/search/isbn")
     public ResponseEntity<List<OrderResponse>> searchOrders(@RequestParam String isbn) {
         return ResponseEntity.ok(orderService.getByIsbn(isbn));

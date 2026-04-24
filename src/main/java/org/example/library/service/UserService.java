@@ -63,26 +63,22 @@ public class UserService {
         resp.setEmail(user.getEmail());
         resp.setBalance(user.getBalance());
 
-        // 1. Считаем книги
         int booksCount = user.getOrders().size();
         resp.setTotalBooks(booksCount);
 
-        // 2. Считаем дни (ChronoUnit помогает вычислить разницу)
         long days = ChronoUnit.DAYS.between(user.getCreatedAt(), LocalDateTime.now());
         resp.setDaysWithUs(days);
 
-        // 3. Рассчитываем ранг (простая логика)
         if (booksCount == 0) resp.setRank("Странник");
         else if (booksCount < 3) resp.setRank("Читатель");
         else if (booksCount < 7) resp.setRank("Книжный червь");
         else resp.setRank("Легендарный Библиотекарь");
 
-        // 4. Ищем любимый жанр (Stream API магия)
         String fav = user.getOrders().stream()
-                .map(order -> order.getBook().getCategory().name()) // Берем имена категорий
-                .collect(Collectors.groupingBy(Function.identity(), Collectors.counting())) // Группируем и считаем
+                .map(order -> order.getBook().getCategory().name())
+                .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()))
                 .entrySet().stream()
-                .max(Map.Entry.comparingByValue()) // Ищем тот, которого больше всего
+                .max(Map.Entry.comparingByValue())
                 .map(Map.Entry::getKey)
                 .orElse("Ещё не определен");
 
@@ -91,8 +87,6 @@ public class UserService {
         return resp;
     }
 
-    // ===== АДМИН МЕТОДЫ =====
-
     public User getOrCreateAdmin() {
         Optional<User> existingAdmin = userRepository.findByEmail("admin@bookcloud.com");
 
@@ -100,7 +94,6 @@ public class UserService {
             return existingAdmin.get();
         }
 
-        // Создаем админа
         User admin = User.builder()
                 .fullName("Администратор BookCloud")
                 .email("admin@bookcloud.com")
@@ -140,25 +133,20 @@ public class UserService {
     }
 
     public UserResponse updateUser(Long id, UserRequest request) {
-        // 1. Ищем пользователя или выбрасываем четкое исключение
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Пользователь с ID " + id + " не найден"));
 
-        // 2. Проверка на дубликат Email (если email изменился)
         if (!user.getEmail().equals(request.getEmail()) && userRepository.existsByEmail(request.getEmail())) {
             throw new RuntimeException("Этот Email уже занят другим пользователем");
         }
 
-        // 3. Обновляем основные поля
         user.setFullName(request.getFullName());
         user.setEmail(request.getEmail());
 
-        // Если у тебя в модели есть поле username, обновляем и его
         if (request.getUsername() != null) {
             user.setUsername(request.getUsername());
         }
 
-        // 4. Обновляем роль и баланс (те поля, которые мы видели на фронтенде)
         if (request.getRole() != null) {
             user.setRole(request.getRole());
         }
@@ -167,26 +155,22 @@ public class UserService {
             user.setBalance(request.getBalance());
         }
 
-        // 5. Безопасное обновление пароля
         if (request.getPassword() != null && !request.getPassword().trim().isEmpty()) {
             user.setPassword(passwordEncoder.encode(request.getPassword()));
         }
 
-        // 6. Сохраняем
         User savedUser = userRepository.save(user);
 
-        // 7. Превращаем в Response (лучше вынести в отдельный метод-маппер)
         return mapToResponse(savedUser);
     }
 
-    // Вспомогательный метод для чистоты кода
     private UserResponse mapToResponse(User user) {
         UserResponse response = new UserResponse();
         response.setId(user.getId());
         response.setFullName(user.getFullName());
         response.setEmail(user.getEmail());
-        response.setRole(user.getRole()); // Добавил роль
-        response.setBalance(user.getBalance()); // Теперь баланс не будет приходить как undefined
+        response.setRole(user.getRole());
+        response.setBalance(user.getBalance());
         return response;
     }
 

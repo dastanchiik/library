@@ -126,7 +126,6 @@
     }
     initTheme();
 
-    // Переиспользуем твою логику загрузки, но с адаптацией стилей для строк
     const token = localStorage.getItem('token');
     const getHeaders = () => ({ 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' });
 

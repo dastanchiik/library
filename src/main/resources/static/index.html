@@ -5,245 +5,178 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BookCloud - Твоя онлайн библиотека</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = { darkMode: 'class' }
+    </script>
     <style>
-        .book-img {
-            height: 250px;
-            width: 100%;
-            object-fit: contain;
-            background-color: #f9fafb;
-        }
+        .book-img-container { height: 280px; width: 100%; border-radius: 1.5rem; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+        body { transition: background-color 0.3s, color 0.3s; }
+        .card-hover:hover { transform: translateY(-5px); }
     </style>
 </head>
-<body class="bg-gray-50 text-gray-900 font-sans">
+<body class="bg-gray-50 text-gray-900 font-sans dark:bg-[#111827] dark:text-white">
 
-    <!-- Header -->
-    <header class="bg-white shadow-sm sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-            <h1 class="text-2xl font-black text-blue-600 tracking-tight">📚 BookCloud</h1>
-            
-            <nav class="hidden md:flex space-x-8 font-semibold text-gray-600">
-                <a href="index.html" class="text-blue-600 border-b-2 border-blue-600 pb-1">Каталог</a>
-                <a href="my-books.html" class="hover:text-blue-600 transition">Мои книги</a>
-                <a href="orders.html" class="hover:text-blue-600 transition">Заказы</a>
-            </nav>
+<header class="bg-white shadow-sm sticky top-0 z-50 dark:bg-[#1f2937] dark:shadow-none border-b dark:border-gray-700">
+    <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+        <h1 class="text-2xl font-black text-blue-600 tracking-tight cursor-pointer" onclick="location.reload()">
+            📚 BookCloud
+        </h1>
 
-            <div class="flex items-center gap-6">
-                <div id="userInfo" class="hidden flex items-center gap-3">
-                    <div class="text-right">
-                        <p id="usernameDisplay" class="text-sm font-bold"></p>
-                        <p id="balanceDisplay" class="text-xs text-blue-600 font-bold"></p>
-                    </div>
-                    <a href="profile.html" class="w-10 h-10 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center font-bold hover:bg-blue-200 transition">
-                        👤
-                    </a>
-                </div>
-                <div id="authLinks" class="flex gap-2">
-                    <a href="login.html" class="px-4 py-2 text-blue-600 font-bold hover:bg-blue-50 rounded-lg">Вход</a>
-                    <a href="register.html" class="px-4 py-2 bg-blue-600 text-white font-bold rounded-lg shadow-md hover:bg-blue-700">Старт</a>
-                </div>
-            </div>
+        <nav class="flex space-x-8 font-bold uppercase text-xs tracking-widest">
+            <a href="#" onclick="location.reload()" class="text-blue-600 border-b-2 border-blue-600 pb-1">Каталог</a>
+        </nav>
+
+        <div class="flex items-center gap-4">
+            <button id="themeToggle" class="p-2.5 rounded-xl bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-all">
+                <span id="themeIcon" class="text-lg">☀️</span>
+            </button>
+
+            <div id="authArea" class="flex items-center gap-4"></div>
         </div>
-    </header>
+    </div>
+</header>
 
-    <!-- Hero / Promo -->
-    <div class="bg-blue-600 text-white py-12 px-4">
-        <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-8">
-            <div class="max-w-xl text-center md:text-left">
-                <h2 class="text-4xl md:text-5xl font-black mb-4 leading-tight">Читайте лучшие книги не выходя из дома</h2>
-                <p class="text-blue-100 text-lg mb-8">Тысячи историй в одном облаке. Начни свое путешествие прямо сейчас.</p>
-                <div class="relative max-w-md mx-auto md:mx-0">
-                    <input type="text" id="searchInput" placeholder="Поиск книги по названию..." 
-                           class="w-full px-6 py-4 rounded-2xl text-gray-900 shadow-xl focus:ring-4 focus:ring-blue-400 outline-none pr-16">
-                    <button class="absolute right-2 top-2 bg-blue-500 text-white p-2 rounded-xl hover:bg-blue-400">🔍</button>
-                </div>
-            </div>
-            <div class="hidden lg:block">
-                <div class="text-9xl opacity-20 transform -rotate-12">📚</div>
-            </div>
+<main class="max-w-7xl mx-auto px-4 py-12">
+    <div class="flex flex-col md:flex-row justify-between items-center mb-12 gap-6">
+        <h2 class="text-4xl font-black italic uppercase tracking-tighter underline decoration-blue-600 decoration-4">Все книги</h2>
+
+        <div class="flex gap-4 w-full md:w-auto">
+            <input type="text" id="searchInput" placeholder="Поиск книги..."
+                   class="flex-1 md:w-64 px-4 py-3 rounded-2xl border-none shadow-inner bg-gray-100 dark:bg-gray-800 focus:ring-2 focus:ring-blue-500 outline-none">
+
+            <select id="categoryFilter" onchange="loadBooks()"
+                    class="px-4 py-3 rounded-2xl bg-blue-600 text-white font-bold outline-none shadow-lg cursor-pointer hover:bg-blue-700 transition">
+                <option value="">Все жанры</option>
+                <option value="ФАНТАСТИКА">Фантастика</option>
+                <option value="ХУДОЖЕСТВЕННАЯ">Художественная</option>
+                <option value="НАУКА">Наука</option>
+            </select>
         </div>
     </div>
 
-    <!-- Main Content -->
-    <main class="max-w-7xl mx-auto px-4 py-12">
-        <div class="flex flex-col md:flex-row justify-between items-center mb-10 gap-6">
-            <h3 class="text-3xl font-black tracking-tight" id="catalogTitle">Каталог книг</h3>
-            
-            <div class="flex items-center gap-4 bg-white p-2 rounded-2xl shadow-sm border">
-                <span class="text-sm font-bold text-gray-500 pl-2">Категория:</span>
-                <select id="categoryFilter" onchange="filterByCategory()" 
-                        class="bg-transparent border-none outline-none font-bold text-blue-600 pr-4">
-                    <option value="">Все жанры</option>
-                    <option value="FICTION">Художественная</option>
-                    <option value="FANTASY">Фэнтези</option>
-                    <option value="SCIENCE">Наука</option>
-                    <option value="HISTORY">История</option>
-                    <option value="ROMANCE">Романтика</option>
-                    <option value="HORROR">Ужасы</option>
-                    <option value="MYSTERY">Детектив</option>
-                </select>
-            </div>
-        </div>
+    <div id="booksGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
+    </div>
+</main>
 
-        <div id="booksGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-            <!-- Книги загружаются сюда -->
-            <div class="col-span-full flex justify-center py-20">
-                <div class="animate-spin rounded-full h-12 w-12 border-b-4 border-blue-600"></div>
-            </div>
-        </div>
-    </main>
+<script>
+    const API_BOOK = '/api/book';
+    const TOKEN = localStorage.getItem('token');
+    const USER_ID = localStorage.getItem('userId');
 
-    <script>
-        const API_BASE = '/api/books';
-        const USER_API = '/api/user';
+    async function init() {
+        setupTheme();
+        renderAuth();
+        await loadBooks();
+    }
 
-        async function init() {
-            checkAuth();
-            fetchBooks();
+    // Логика темной темы
+    function setupTheme() {
+        const btn = document.getElementById('themeToggle');
+        const icon = document.getElementById('themeIcon');
+        const html = document.documentElement;
+
+        if (localStorage.getItem('theme') === 'dark') {
+            html.classList.add('dark');
+            icon.innerText = '🌙';
         }
 
-        function checkAuth() {
-            const token = localStorage.getItem('token');
-            const authLinks = document.getElementById('authLinks');
-            const userInfo = document.getElementById('userInfo');
-
-            if (token) {
-                authLinks.classList.add('hidden');
-                userInfo.classList.remove('hidden');
-                fetchProfile();
+        btn.onclick = () => {
+            if (html.classList.contains('dark')) {
+                html.classList.remove('dark');
+                icon.innerText = '☀️';
+                localStorage.setItem('theme', 'light');
+            } else {
+                html.classList.add('dark');
+                icon.innerText = '🌙';
+                localStorage.setItem('theme', 'dark');
             }
-        }
+        };
+    }
 
-        async function fetchProfile() {
-            try {
-                const response = await fetch(`${USER_API}/profile`, {
-                    headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') }
-                });
-                if (response.ok) {
-                    const user = await response.json();
-                    document.getElementById('usernameDisplay').textContent = user.username;
-                    document.getElementById('balanceDisplay').textContent = `${user.balance} сом`;
-                }
-            } catch (error) {}
-        }
-
-        async function fetchBooks() {
-            const container = document.getElementById('booksGrid');
-            const params = new URLSearchParams(window.location.search);
-            const category = params.get('category');
-            
-            let url = API_BASE;
-            if (category) {
-                url = `${API_BASE}/category?category=${category}`;
-                document.getElementById('categoryFilter').value = category;
-                document.getElementById('catalogTitle').textContent = `Книги: ${category}`;
-            }
-
-            try {
-                const response = await fetch(url);
-                const books = await response.json();
-                renderBooks(books);
-            } catch (error) {
-                container.innerHTML = '<p class="text-center col-span-full text-red-500 py-10">Ошибка загрузки книг</p>';
-            }
-        }
-
-        function renderBooks(books) {
-            const container = document.getElementById('booksGrid');
-            if (books.length === 0) {
-                container.innerHTML = '<p class="text-center col-span-full text-gray-500 py-10">Книг пока нет</p>';
-                return;
-            }
-
-            container.innerHTML = books.map(book => `
-                <div class="bg-white rounded-3xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-300 group flex flex-col h-full border border-gray-100">
-                    <div class="relative overflow-hidden cursor-pointer" onclick="window.location.href='book-details.html?id=${book.id}'">
-                        <img src="${book.imageURL || 'https://via.placeholder.com/300x400?text=Нет+фото'}" 
-                             class="book-img group-hover:scale-105 transition-transform duration-500" 
-                             alt="${book.title}"
-                             onerror="this.src='https://via.placeholder.com/300x400?text=Ошибка+загрузки'">
-                        <div class="absolute top-4 right-4 bg-white/90 backdrop-blur px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider text-blue-600 shadow-sm">
-                            ${book.category}
-                        </div>
+    // Профиль / Вход
+    function renderAuth() {
+        const container = document.getElementById('authArea');
+        if (TOKEN) {
+            container.innerHTML = `
+                    <button onclick="logout()" class="text-[10px] font-bold text-red-500 uppercase hover:underline mr-2">Выход</button>
+                    <div onclick="location.href='profile.html'" class="w-10 h-10 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center font-bold border-2 border-blue-600 cursor-pointer hover:scale-110 transition">
+                        ${USER_ID ? 'A' : 'U'}
                     </div>
-                    
-                    <div class="p-6 flex flex-col flex-1">
-                        <div class="mb-4">
-                            <h4 class="font-black text-lg text-gray-900 group-hover:text-blue-600 transition-colors line-clamp-1 cursor-pointer" 
-                                onclick="window.location.href='book-details.html?id=${book.id}'">${book.title}</h4>
-                            <p class="text-gray-400 text-sm font-medium">${book.author}</p>
-                        </div>
-                        
-                        <div class="mt-auto flex items-center justify-between gap-4">
-                            <div>
-                                <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Цена</p>
-                                <p class="text-xl font-black text-gray-900">${book.price} сом</p>
+                `;
+        } else {
+            container.innerHTML = `<a href="login.html" class="px-6 py-2 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700 transition">ВХОД</a>`;
+        }
+    }
+
+    // Загрузка данных
+    async function loadBooks() {
+        const grid = document.getElementById('booksGrid');
+        const category = document.getElementById('categoryFilter').value;
+        grid.innerHTML = '<div class="col-span-full text-center py-20 font-bold opacity-30 animate-pulse text-2xl">ЗАГРУЗКА КАТАЛОГА...</div>';
+
+        let url = category ? `${API_BOOK}/search/books/category?category=${category}` : `${API_BOOK}/books`;
+
+        try {
+            const res = await fetch(url);
+            const books = await res.json();
+            renderBooks(books);
+        } catch (err) {
+            grid.innerHTML = `<div class="col-span-full text-center text-red-500 font-bold">Сервер не отвечает. Проверь Spring Boot.</div>`;
+        }
+    }
+
+    // Отрисовка карточек
+    function renderBooks(books) {
+        const grid = document.getElementById('booksGrid');
+        if (!books || books.length === 0) {
+            grid.innerHTML = '<p class="col-span-full text-center py-20 opacity-50">Книги в этой категории отсутствуют</p>';
+            return;
+        }
+
+        grid.innerHTML = books.map(b => `
+                <div onclick="location.href='book-details.html?id=${b.id}'"
+                     class="group card-hover bg-white dark:bg-gray-800 p-5 rounded-[2.5rem] shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-2xl transition-all cursor-pointer flex flex-col h-full">
+
+                    <div class="book-img-container mb-6 bg-gray-50 dark:bg-gray-900 shadow-inner">
+                        ${b.imageURL ?
+            `<img src="${b.imageURL}" class="w-full h-full object-contain group-hover:scale-105 transition-transform" onerror="this.parentElement.innerHTML=getPlaceholder()">` :
+            getPlaceholder()
+        }
+                    </div>
+
+                    <div class="px-2 flex flex-col flex-1">
+                        <h4 class="font-black text-xl line-clamp-1 mb-1 dark:text-white uppercase tracking-tight">${b.title || 'Без названия'}</h4>
+                        <p class="text-gray-400 text-sm font-medium mb-4">${b.author || 'Автор не указан'}</p>
+
+                        <div class="mt-auto flex justify-between items-center">
+                            <span class="text-2xl font-black text-blue-600">${b.price} сом</span>
+                            <div class="w-10 h-10 rounded-full bg-blue-50 dark:bg-gray-700 flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition-colors">
+                                <span class="text-xl">→</span>
                             </div>
-                            <button onclick="buyBook(${book.id}, ${book.price})" 
-                                    class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 rounded-2xl font-bold transition shadow-lg shadow-blue-200">
-                                Купить
-                            </button>
                         </div>
                     </div>
                 </div>
             `).join('');
-        }
+    }
 
-        async function buyBook(bookId, price) {
-            const token = localStorage.getItem('token');
-            if (!token) {
-                alert('Сначала войдите в систему!');
-                window.location.href = 'login.html';
-                return;
-            }
+    // Заглушка, если картинка не загрузилась (вместо спама в консоль)
+    function getPlaceholder() {
+        return `<svg class="w-16 h-16 text-gray-200 dark:text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+            </svg>`;
+    }
 
-            if (!confirm(`Купить эту книгу за ${price} сом?`)) return;
+    // Поиск
+    document.getElementById('searchInput').oninput = async (e) => {
+        const val = e.target.value.trim();
+        if (val.length === 0) return loadBooks();
+        const res = await fetch(`${API_BOOK}/search/book/title?query=${encodeURIComponent(val)}`);
+        if (res.ok) renderBooks(await res.json());
+    };
 
-            try {
-                const response = await fetch('/api/orders/buy', {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': 'Bearer ' + token,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ bookId: bookId })
-                });
+    function logout() { localStorage.clear(); location.reload(); }
 
-                if (response.ok) {
-                    alert('Поздравляем! Книга успешно куплена.');
-                    fetchProfile(); // Refresh balance
-                } else {
-                    const data = await response.json();
-                    alert(`Ошибка: ${data.message || 'Не удалось совершить покупку'}`);
-                }
-            } catch (error) {
-                alert('Произошла ошибка при оформлении заказа');
-            }
-        }
-
-        function filterByCategory() {
-            const category = document.getElementById('categoryFilter').value;
-            if (category) {
-                window.location.href = `index.html?category=${category}`;
-            } else {
-                window.location.href = `index.html`;
-            }
-        }
-
-        // Search logic
-        document.getElementById('searchInput').oninput = async (e) => {
-            const query = e.target.value;
-            if (query.length < 2) {
-                if (query.length === 0) fetchBooks();
-                return;
-            }
-            try {
-                const response = await fetch(`${API_BASE}/search?title=${query}`);
-                const books = await response.json();
-                renderBooks(books);
-            } catch (error) {}
-        };
-
-        window.addEventListener('DOMContentLoaded', init);
-    </script>
+    init();
+</script>
 </body>
 </html>

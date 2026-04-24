@@ -7,7 +7,7 @@ import lombok.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "orders") // Теперь таблица называется заказы
+@Table(name = "orders")
 @Builder
 @Getter
 @Setter
@@ -27,13 +27,13 @@ public class Order {
     @JoinColumn(name = "book_id", nullable = false)
     private Book book;
 
-    private LocalDateTime orderDate; // Дата заказа
+    private LocalDateTime orderDate;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    private OrderStatus status; // СТАТУС: "НОВЫЙ", "ВЫДАН", "ОТМЕНЕН"
+    private OrderStatus status;
 
-    private int quantity; // Количество (обычно 1, но вдруг купят 2)
+    private int quantity;
 
-    private Double totalPrice; // Сумма заказа на момент покупки
+    private Double totalPrice;
 }

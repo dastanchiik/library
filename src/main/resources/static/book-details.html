@@ -3,147 +3,119 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Детали книги - BookCloud</title>
+    <title>BookCloud - Детали книги</title>
     <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-gray-50 text-gray-900 font-sans min-h-screen">
-
-    <!-- Header -->
-    <header class="bg-white shadow-sm">
-        <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-            <h1 class="text-2xl font-black text-blue-600 cursor-pointer" onclick="window.location.href='index.html'">📚 BookCloud</h1>
-            <div id="userInfo" class="flex items-center gap-3">
-                <div class="text-right">
-                    <p id="usernameDisplay" class="text-sm font-bold"></p>
-                    <p id="balanceDisplay" class="text-xs text-blue-600 font-bold"></p>
-                </div>
-            </div>
-        </div>
-    </header>
-
-    <main class="max-w-5xl mx-auto px-4 py-12">
-        <button onclick="history.back()" class="mb-8 text-blue-600 font-bold flex items-center gap-2 hover:translate-x-[-4px] transition-transform">
-            ← Назад к каталогу
-        </button>
-
-        <div id="bookContent" class="bg-white rounded-3xl shadow-xl overflow-hidden flex flex-col md:flex-row border border-gray-100">
-            <!-- Сюда загрузится контент -->
-            <div class="p-20 w-full flex justify-center">
-                <div class="animate-spin rounded-full h-12 w-12 border-b-4 border-blue-600"></div>
-            </div>
-        </div>
-    </main>
-
     <script>
-        const params = new URLSearchParams(window.location.search);
-        const bookId = params.get('id');
-
-        async function init() {
-            if (!bookId) {
-                window.location.href = 'index.html';
-                return;
-            }
-            fetchProfile();
-            fetchBookDetails();
-        }
-
-        async function fetchProfile() {
-            const token = localStorage.getItem('token');
-            if (!token) return;
-            try {
-                const response = await fetch('/api/user/profile', {
-                    headers: { 'Authorization': 'Bearer ' + token }
-                });
-                if (response.ok) {
-                    const user = await response.json();
-                    document.getElementById('usernameDisplay').textContent = user.username;
-                    document.getElementById('balanceDisplay').textContent = `${user.balance} сом`;
-                }
-            } catch (error) {}
-        }
-
-        async function fetchBookDetails() {
-            try {
-                const response = await fetch(`/api/books/${bookId}`);
-                if (!response.ok) throw new Error();
-                const book = await response.json();
-                renderDetails(book);
-            } catch (error) {
-                document.getElementById('bookContent').innerHTML = '<p class="p-10 text-center text-red-500">Книга не найдена</p>';
-            }
-        }
-
-        function renderDetails(book) {
-            const container = document.getElementById('bookContent');
-            container.innerHTML = `
-                <div class="md:w-1/2 bg-gray-100 flex items-center justify-center p-8">
-                    <img src="${book.imageURL || 'https://via.placeholder.com/400x600?text=Нет+фото'}" 
-                         class="max-h-[500px] rounded-2xl shadow-2xl object-contain bg-white" 
-                         alt="${book.title}"
-                         onerror="this.src='https://via.placeholder.com/400x600?text=Ошибка+загрузки'">
-                </div>
-                <div class="md:w-1/2 p-8 md:p-12 flex flex-col">
-                    <div class="mb-6">
-                        <span class="inline-block px-4 py-1 bg-blue-100 text-blue-600 rounded-full text-xs font-black uppercase tracking-widest mb-4">
-                            ${book.category}
-                        </span>
-                        <h2 class="text-4xl font-black text-gray-900 mb-2 leading-tight">${book.title}</h2>
-                        <p class="text-xl text-gray-400 font-medium">Автор: ${book.author}</p>
-                    </div>
-
-                    <div class="bg-gray-50 rounded-2xl p-6 mb-8 border border-gray-100">
-                        <p class="text-gray-600 leading-relaxed italic">
-                            "${book.description || 'Описание отсутствует...'}"
-                        </p>
-                    </div>
-
-                    <div class="mt-auto pt-8 border-t flex items-center justify-between">
-                        <div>
-                            <p class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Стоимость</p>
-                            <p class="text-4xl font-black text-blue-600">${book.price} сом</p>
-                        </div>
-                        <button onclick="buyBook(${book.id}, ${book.price})" 
-                                class="bg-blue-600 hover:bg-blue-700 text-white px-10 py-5 rounded-2xl font-black text-lg transition shadow-2xl shadow-blue-300 transform hover:scale-105 active:scale-95">
-                            Купить сейчас
-                        </button>
-                    </div>
-                </div>
-            `;
-        }
-
-        async function buyBook(id, price) {
-            const token = localStorage.getItem('token');
-            if (!token) {
-                alert('Пожалуйста, войдите в систему для покупки!');
-                window.location.href = 'login.html';
-                return;
-            }
-
-            if (!confirm(`Вы действительно хотите приобрести книгу "${document.querySelector('h2').textContent}" за ${price} сом?`)) return;
-
-            try {
-                const response = await fetch('/api/orders/buy', {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': 'Bearer ' + token,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ bookId: id })
-                });
-
-                if (response.ok) {
-                    alert('Успешно! Книга добавлена в вашу библиотеку.');
-                    fetchProfile();
-                } else {
-                    const data = await response.json();
-                    alert(`Ошибка: ${data.message || 'Недостаточно средств или ошибка сервера'}`);
-                }
-            } catch (error) {
-                alert('Произошла ошибка при покупке');
-            }
-        }
-
-        init();
+        tailwind.config = { darkMode: 'class' }
     </script>
+    <style>
+        body { transition: background-color 0.3s; }
+    </style>
+</head>
+<body class="bg-[#0f172a] text-white min-h-screen font-sans dark">
+
+<header class="max-w-7xl mx-auto px-6 py-6 flex justify-between items-center">
+    <h1 class="text-2xl font-black text-blue-500 tracking-tighter cursor-pointer" onclick="location.href='index.html'">
+        📚 BookCloud
+    </h1>
+    <div id="authArea">
+        <div class="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center font-bold text-white shadow-lg shadow-blue-500/20">
+            A
+        </div>
+    </div>
+</header>
+
+<main class="max-w-6xl mx-auto px-6 py-10">
+    <button onclick="location.href='index.html'" class="text-blue-400 hover:text-blue-300 font-bold mb-10 flex items-center gap-2 transition">
+        ← Назад к каталогу
+    </button>
+
+    <div id="bookDetails" class="flex flex-col lg:flex-row gap-16 items-start">
+        <div class="w-full text-center py-20 opacity-20 text-3xl font-black italic uppercase">Загрузка...</div>
+    </div>
+</main>
+
+<script>
+    const API_BOOK = '/api/book';
+    const API_ORDER = '/api/order';
+    const TOKEN = localStorage.getItem('token');
+    const USER_ID = localStorage.getItem('userId');
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const bookId = urlParams.get('id');
+
+    async function loadBook() {
+        if (!bookId) return;
+        try {
+            const res = await fetch(`${API_BOOK}/${bookId}`);
+            if (!res.ok) throw new Error("Книга не найдена");
+            const book = await res.json();
+            renderBook(book);
+        } catch (err) {
+            document.getElementById('bookDetails').innerHTML = `<div class="text-red-500 font-bold">Ошибка: ${err.message}</div>`;
+        }
+    }
+
+    function renderBook(b) {
+        const container = document.getElementById('bookDetails');
+
+        container.innerHTML = `
+        <div class="w-full lg:w-[450px]">
+            <div class="relative bg-gray-800 rounded-[3rem] p-6 shadow-2xl border border-gray-700">
+                <div class="aspect-[3/4] rounded-[2rem] overflow-hidden bg-[#1e293b] flex items-center justify-center">
+                    ${b.imageURL ?
+            `<img src="${b.imageURL}" class="w-full h-full object-cover" onerror="this.parentElement.innerHTML=getPlaceholder()">` :
+            getPlaceholder()
+        }
+                </div>
+            </div>
+        </div>
+
+        <div class="flex-1">
+            <h2 class="text-6xl font-black italic uppercase tracking-tighter mb-2 leading-tight">${b.title}</h2>
+            <p class="text-blue-500 text-2xl font-bold uppercase tracking-widest mb-10">${b.author}</p>
+
+            <div class="bg-gray-800/40 border border-gray-700 p-8 rounded-[2.5rem] mb-10">
+                <h3 class="text-gray-500 text-xs font-black uppercase tracking-[0.3em] mb-4 text-blue-400">О книге</h3>
+                <p class="text-gray-300 text-lg leading-relaxed font-medium">
+                    ${b.description || 'Описание для этой книги пока не добавлено.'}
+                </p>
+            </div>
+
+            <div class="bg-gray-800/80 border border-gray-700 p-6 rounded-[2.5rem] flex items-center justify-between">
+                <div>
+                    <p class="text-gray-500 text-[10px] font-black uppercase tracking-widest mb-1">Цена</p>
+                    <p class="text-3xl font-black text-blue-500">${b.price} сом</p>
+                </div>
+
+                <button onclick="buyNow(${b.id})"
+                        class="bg-blue-600 hover:bg-blue-500 text-white px-16 py-5 rounded-2xl font-black text-xl uppercase italic tracking-tighter shadow-xl shadow-blue-600/20 transition-all active:scale-95">
+                    Купить сейчас
+                </button>
+            </div>
+        </div>
+    `;
+    }
+
+    function getPlaceholder() {
+        return `<svg class="w-20 h-20 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+            </svg>`;
+    }
+
+    async function buyNow(id) {
+        if (!TOKEN) { alert("Войдите в аккаунт"); return; }
+        try {
+            const res = await fetch(`${API_ORDER}/buy?userId=${USER_ID}&bookId=${id}`, {
+                method: 'POST',
+                headers: { 'Authorization': `Bearer ${TOKEN}` }
+            });
+            if (res.ok) alert("✅ Книга куплена!");
+            else alert("❌ Недостаточно средств");
+        } catch (e) { alert("Ошибка сети"); }
+    }
+
+    loadBook();
+</script>
 </body>
 </html>

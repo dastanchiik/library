@@ -9,17 +9,18 @@ public class BookResponse {
     private String title;
     private String author;
     private Double price;
-    private String category; // Здесь будет русское название
+    private String category;
     private Integer stock;
     private Integer salesCount;
     private String imageURL;
+    private String description;
 
-    // Статический метод, чтобы быстро превратить Entity в DTO
     public static BookResponse fromEntity(Book book) {
         BookResponse response = new BookResponse();
         response.setId(book.getId());
         response.setTitle(book.getTitle());
         response.setAuthor(book.getAuthor());
+        response.setDescription(book.getDescription());
         response.setPrice(book.getPrice());
         response.setStock(book.getStock());
         response.setCategory(book.getCategory().name());

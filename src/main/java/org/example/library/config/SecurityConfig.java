@@ -44,16 +44,13 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        // Открываем доступ к авторизации и документации
                         .requestMatchers("/api/auth/**", "/swagger-ui/**", "/v3/api-docs/**","/").permitAll()
-                        // Админ эндпоинты только для админов
                         .requestMatchers("/api/admin/**").hasAnyAuthority("ADMIN")
                         .anyRequest().permitAll()
                 )
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
-                // Подключаем наш провайдер и фильтр JWT
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(tokenVerifierFilter, UsernamePasswordAuthenticationFilter.class);
 

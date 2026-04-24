@@ -8,5 +8,13 @@ public enum Category {
     КЛАССИКА,
     ПСИХОЛОГИЯ,
     БИЗНЕС,
-    ПРОГРАММИРОВАНИЕ
+    ПРОГРАММИРОВАНИЕ,
+    FICTION,
+    HISTORY,
+    POETRY,
+    SCIENCE,
+    ART,
+    LIFESTYLE,
+    TRAVEL,
+    PHILOSOPHY
 }

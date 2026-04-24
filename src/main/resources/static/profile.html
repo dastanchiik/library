@@ -69,7 +69,7 @@
 <div class="mt-10 pt-6 border-t border-gray-100 dark:border-gray-700">
     <button onclick="logout()" class="w-full flex items-center justify-center gap-3 bg-red-50 dark:bg-red-800 text-red-600 dark:text-red-200 py-4 rounded-2xl font-bold hover:bg-red-100 dark:hover:bg-red-700 transition-colors group">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 0 013 3v1" />
         </svg>
         Выйти из аккаунта
     </button>
@@ -77,10 +77,8 @@
 <script>
     function logout() {
         if (confirm("Вы точно хотите выйти из системы?")) {
-            // Стираем данные из памяти браузера
             localStorage.clear();
 
-            // Редирект на вход
             window.location.href = 'welcome.html';
         }
     }
@@ -101,11 +99,9 @@
 
             const user = await res.json();
 
-            // Имя и Инициал
             document.getElementById('prof-name').innerText = user.fullName || "Пользователь";
             document.getElementById('initials').innerText = user.fullName ? user.fullName.charAt(0) : "?";
 
-            // Email (Берем из ответа бэкенда)
             const emailElem = document.getElementById('prof-email');
             if (user.email) {
                 emailElem.innerText = user.email;
@@ -113,19 +109,16 @@
                 emailElem.innerText = "Email не указан";
             }
 
-            // Баланс и Статистика
             document.getElementById('prof-balance').innerText = `${user.balance} сом`;
             document.getElementById('prof-count').innerText = user.totalBooks;
             document.getElementById('prof-days').innerText = user.daysWithUs;
 
-            // Ранг
             document.getElementById('prof-rank').innerText = user.rank || "Странник";
 
-            // Жанр (Твоя логика: если книг мало, пишем "Нужно больше книг")
             const genreElem = document.getElementById('prof-genre');
             if (user.totalBooks === 0 || user.favouriteGenre === "Ещё не определен") {
                 genreElem.innerText = "Нужно купить больше книг";
-                genreElem.classList.add('text-sm', 'text-gray-400'); // Делаем текст чуть скромнее
+                genreElem.classList.add('text-sm', 'text-gray-400');
             } else {
                 genreElem.innerText = user.favouriteGenre;
                 genreElem.classList.remove('text-sm', 'text-gray-400');
@@ -136,7 +129,6 @@
         }
     }
 
-    // ===== ТЁМНЫЙ РЕЖИМ =====
     function initDarkMode() {
         const isDark = localStorage.getItem('darkMode') === 'true';
         if (isDark) {

@@ -29,11 +29,9 @@ public class AdminService {
     private final UserRepository userRepository;
     private final BookRepository bookRepository;
     private final OrderRepository orderRepository;
-    private final UserService userService; // Используем для переиспользования логики регистрации
-    private final BookService bookService; // Используем для логики книг
-    private final OrderService orderService; // Используем для логики заказов
-
-    // ===== УПРАВЛЕНИЕ ПОЛЬЗОВАТЕЛЯМИ =====
+    private final UserService userService;
+    private final BookService bookService;
+    private final OrderService orderService;
 
     @Transactional(readOnly = true)
     public List<UserResponse> getAllUsersForAdmin() {
@@ -62,8 +60,6 @@ public class AdminService {
         return userService.getProfile(id);
     }
 
-    // ===== УПРАВЛЕНИЕ КНИГАМИ =====
-
     @Transactional(readOnly = true)
     public List<BookResponse> getAllBooks() {
         return bookService.getAllBooks();
@@ -84,14 +80,10 @@ public class AdminService {
         bookService.deleteBook(id);
     }
 
-
-    // ===== УПРАВЛЕНИЕ ЗАКАЗАМИ =====
-
     @Transactional(readOnly = true)
     public List<OrderResponse> getAllOrdersAsDto() {
-        // Предполагается, что в OrderService есть такой метод
         return orderService.getAllOrders().stream()
-                .map(OrderResponse::fromEntity) // Превращаем каждую книгу в Response
+                .map(OrderResponse::fromEntity)
                 .toList();
     }
 
@@ -99,8 +91,6 @@ public class AdminService {
     public void updateOrderStatus(Long id, OrderStatus status) {
         orderService.updateOrderStatus(id, status);
     }
-
-    // ===== СТАТИСТИКА =====
 
     @Transactional(readOnly = true)
     public Map<String, Object> getAdminDashboardStats() {
@@ -115,7 +105,6 @@ public class AdminService {
         return stats;
     }
 
-    // ===== МАППЕРЫ (Вспомогательные методы) =====
 
     private UserResponse mapToUserResponse(User user) {
         return UserResponse.builder()

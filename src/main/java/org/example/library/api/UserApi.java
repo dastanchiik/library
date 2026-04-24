@@ -33,7 +33,6 @@ public class UserApi {
 
     @GetMapping("/by-email")
     public ResponseEntity<UserResponse> getUserByEmail(@RequestParam String email) {
-        // В сервисе должен быть метод findByEmail
         return ResponseEntity.ok(userService.getUserByEmail(email));
     }
 
