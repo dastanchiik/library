@@ -4,29 +4,31 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BookCloud - Детали книги</title>
+    <script src="theme.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = { darkMode: 'class' }
     </script>
     <style>
-        body { transition: background-color 0.3s; }
+        body { transition: background-color 0.3s, color 0.3s; }
     </style>
 </head>
-<body class="bg-[#0f172a] text-white min-h-screen font-sans dark">
+<body class="bg-gray-50 text-gray-900 min-h-screen font-sans dark:bg-[#0f172a] dark:text-white">
 
 <header class="max-w-7xl mx-auto px-6 py-6 flex justify-between items-center">
     <h1 class="text-2xl font-black text-blue-500 tracking-tighter cursor-pointer" onclick="location.href='index.html'">
         📚 BookCloud
     </h1>
-    <div id="authArea">
-        <div class="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center font-bold text-white shadow-lg shadow-blue-500/20">
-            A
-        </div>
+    <div class="flex items-center gap-4">
+        <button id="themeToggle" onclick="toggleTheme()" class="p-2.5 rounded-xl bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-all">
+            <span id="themeIcon" class="text-lg">☀️</span>
+        </button>
+        <div id="authArea" class="flex items-center gap-4"></div>
     </div>
 </header>
 
 <main class="max-w-6xl mx-auto px-6 py-10">
-    <button onclick="location.href='index.html'" class="text-blue-400 hover:text-blue-300 font-bold mb-10 flex items-center gap-2 transition">
+    <button onclick="location.href='index.html'" class="text-blue-500 hover:text-blue-600 font-bold mb-10 flex items-center gap-2 transition">
         ← Назад к каталогу
     </button>
 
@@ -61,8 +63,8 @@
 
         container.innerHTML = `
         <div class="w-full lg:w-[450px]">
-            <div class="relative bg-gray-800 rounded-[3rem] p-6 shadow-2xl border border-gray-700">
-                <div class="aspect-[3/4] rounded-[2rem] overflow-hidden bg-[#1e293b] flex items-center justify-center">
+            <div class="relative bg-white dark:bg-gray-800 rounded-[3rem] p-6 shadow-2xl border border-gray-100 dark:border-gray-700">
+                <div class="aspect-[3/4] rounded-[2rem] overflow-hidden bg-gray-50 dark:bg-[#1e293b] flex items-center justify-center">
                     ${b.imageURL ?
             `<img src="${b.imageURL}" class="w-full h-full object-cover" onerror="this.parentElement.innerHTML=getPlaceholder()">` :
             getPlaceholder()
@@ -72,20 +74,20 @@
         </div>
 
         <div class="flex-1">
-            <h2 class="text-6xl font-black italic uppercase tracking-tighter mb-2 leading-tight">${b.title}</h2>
+            <h2 class="text-6xl font-black italic uppercase tracking-tighter mb-2 leading-tight dark:text-white">${b.title}</h2>
             <p class="text-blue-500 text-2xl font-bold uppercase tracking-widest mb-10">${b.author}</p>
 
-            <div class="bg-gray-800/40 border border-gray-700 p-8 rounded-[2.5rem] mb-10">
-                <h3 class="text-gray-500 text-xs font-black uppercase tracking-[0.3em] mb-4 text-blue-400">О книге</h3>
-                <p class="text-gray-300 text-lg leading-relaxed font-medium">
+            <div class="bg-white dark:bg-gray-800/40 border border-gray-100 dark:border-gray-700 p-8 rounded-[2.5rem] mb-10 shadow-sm">
+                <h3 class="text-blue-500 text-xs font-black uppercase tracking-[0.3em] mb-4">О книге</h3>
+                <p class="text-gray-600 dark:text-gray-300 text-lg leading-relaxed font-medium">
                     ${b.description || 'Описание для этой книги пока не добавлено.'}
                 </p>
             </div>
 
-            <div class="bg-gray-800/80 border border-gray-700 p-6 rounded-[2.5rem] flex items-center justify-between">
+            <div class="bg-white dark:bg-gray-800/80 border border-gray-100 dark:border-gray-700 p-6 rounded-[2.5rem] flex items-center justify-between shadow-lg">
                 <div>
-                    <p class="text-gray-500 text-[10px] font-black uppercase tracking-widest mb-1">Цена</p>
-                    <p class="text-3xl font-black text-blue-500">${b.price} сом</p>
+                    <p class="text-gray-400 dark:text-gray-500 text-[10px] font-black uppercase tracking-widest mb-1">Цена</p>
+                    <p class="text-3xl font-black text-blue-600 dark:text-blue-500">${b.price} сом</p>
                 </div>
 
                 <button onclick="buyNow(${b.id})"
@@ -98,7 +100,7 @@
     }
 
     function getPlaceholder() {
-        return `<svg class="w-20 h-20 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        return `<svg class="w-20 h-20 text-gray-300 dark:text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
             </svg>`;
     }
@@ -115,6 +117,22 @@
         } catch (e) { alert("Ошибка сети"); }
     }
 
+    function renderAuth() {
+        const container = document.getElementById('authArea');
+        if (TOKEN) {
+            container.innerHTML = `
+                <button onclick="safeLogout()" class="text-[10px] font-bold text-red-500 uppercase hover:underline mr-2">Выход</button>
+                <div onclick="location.href='profile.html'" class="w-10 h-10 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center font-bold border-2 border-blue-600 cursor-pointer hover:scale-110 transition">
+                    ${USER_ID ? 'A' : 'U'}
+                </div>
+            `;
+        } else {
+            container.innerHTML = `<a href="auth.html" class="px-6 py-2 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700 transition">ВХОД</a>`;
+        }
+    }
+
+    initThemeIcon();
+    renderAuth();
     loadBook();
 </script>
 </body>

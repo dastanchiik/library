@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BookCloud - Твоя онлайн библиотека</title>
+    <script src="theme.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = { darkMode: 'class' }
@@ -27,7 +28,7 @@
         </nav>
 
         <div class="flex items-center gap-4">
-            <button id="themeToggle" class="p-2.5 rounded-xl bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-all">
+            <button id="themeToggle" onclick="toggleTheme()" class="p-2.5 rounded-xl bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-all">
                 <span id="themeIcon" class="text-lg">☀️</span>
             </button>
 
@@ -64,33 +65,9 @@
     const USER_ID = localStorage.getItem('userId');
 
     async function init() {
-        setupTheme();
+        initThemeIcon();
         renderAuth();
         await loadBooks();
-    }
-
-    // Логика темной темы
-    function setupTheme() {
-        const btn = document.getElementById('themeToggle');
-        const icon = document.getElementById('themeIcon');
-        const html = document.documentElement;
-
-        if (localStorage.getItem('theme') === 'dark') {
-            html.classList.add('dark');
-            icon.innerText = '🌙';
-        }
-
-        btn.onclick = () => {
-            if (html.classList.contains('dark')) {
-                html.classList.remove('dark');
-                icon.innerText = '☀️';
-                localStorage.setItem('theme', 'light');
-            } else {
-                html.classList.add('dark');
-                icon.innerText = '🌙';
-                localStorage.setItem('theme', 'dark');
-            }
-        };
     }
 
     // Профиль / Вход
@@ -98,13 +75,13 @@
         const container = document.getElementById('authArea');
         if (TOKEN) {
             container.innerHTML = `
-                    <button onclick="logout()" class="text-[10px] font-bold text-red-500 uppercase hover:underline mr-2">Выход</button>
+                    <button onclick="safeLogout()" class="text-[10px] font-bold text-red-500 uppercase hover:underline mr-2">Выход</button>
                     <div onclick="location.href='profile.html'" class="w-10 h-10 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center font-bold border-2 border-blue-600 cursor-pointer hover:scale-110 transition">
                         ${USER_ID ? 'A' : 'U'}
                     </div>
                 `;
         } else {
-            container.innerHTML = `<a href="login.html" class="px-6 py-2 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700 transition">ВХОД</a>`;
+            container.innerHTML = `<a href="auth.html" class="px-6 py-2 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700 transition">ВХОД</a>`;
         }
     }
 
@@ -173,8 +150,6 @@
         const res = await fetch(`${API_BOOK}/search/book/title?query=${encodeURIComponent(val)}`);
         if (res.ok) renderBooks(await res.json());
     };
-
-    function logout() { localStorage.clear(); location.reload(); }
 
     init();
 </script>

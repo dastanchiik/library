@@ -1,9 +1,10 @@
 <!DOCTYPE html>
-<html lang="ru" id="htmlRoot">
+<html lang="ru">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Вход в BookCloud</title>
+  <script src="theme.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -11,9 +12,13 @@
     }
   </script>
 </head>
-<body class="bg-blue-600 dark:bg-gray-900 h-screen flex items-center justify-center p-4 transition-colors duration-300">
+<body class="bg-blue-600 dark:bg-[#111827] h-screen flex items-center justify-center p-4 transition-colors duration-300">
 
-<div class="bg-white dark:bg-gray-800 w-full max-w-md rounded-3xl shadow-2xl overflow-hidden">
+<div class="absolute top-6 right-6">
+    <button onclick="toggleTheme()" class="px-3 py-2 bg-white/10 backdrop-blur-md text-white border border-white/20 rounded-lg font-semibold hover:bg-white/20 transition" id="themeIcon">🌙</button>
+</div>
+
+<div class="bg-white dark:bg-gray-800 w-full max-w-md rounded-3xl shadow-2xl overflow-hidden border dark:border-gray-700">
   <div class="flex border-b dark:border-gray-700">
     <button id="loginTab" onclick="switchTab('login')" class="w-1/2 py-4 font-bold text-blue-600 dark:text-blue-400 border-b-2 border-blue-600 dark:border-blue-400 transition">Вход</button>
     <button id="registerTab" onclick="switchTab('register')" class="w-1/2 py-4 font-bold text-gray-400 dark:text-gray-500 hover:text-blue-600 dark:hover:text-blue-400 transition">Регистрация</button>
@@ -31,7 +36,7 @@
       <input type="text" id="username" placeholder="Логин (Username)" required class="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white focus:border-blue-500 dark:focus:border-blue-400 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-700 outline-none transition">
       <input type="password" id="password" placeholder="Пароль" required class="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white focus:border-blue-500 dark:focus:border-blue-400 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-700 outline-none transition">
 
-      <button type="submit" id="submitBtn" class="w-full bg-blue-600 dark:bg-blue-700 text-white py-4 rounded-xl font-bold text-lg hover:bg-blue-700 dark:hover:bg-blue-600 active:scale-95 transition-all shadow-lg shadow-blue-100 dark:shadow-blue-900/50 mt-6">
+      <button type="submit" id="submitBtn" class="w-full bg-blue-600 dark:bg-blue-700 text-white py-4 rounded-xl font-bold text-lg hover:bg-blue-700 dark:hover:bg-blue-600 active:scale-95 transition-all shadow-lg shadow-blue-100 dark:shadow-none mt-6">
         Войти
       </button>
     </form>
@@ -57,15 +62,15 @@
       regFields.classList.remove('hidden');
       submitBtn.innerText = 'Создать аккаунт';
       formTitle.innerText = 'Стань частью облака';
-      registerTab.classList.add('text-blue-600', 'border-b-2', 'border-blue-600');
-      loginTab.classList.remove('text-blue-600', 'border-b-2', 'border-blue-600');
+      registerTab.classList.add('text-blue-600', 'border-b-2', 'border-blue-600', 'dark:text-blue-400', 'dark:border-blue-400');
+      loginTab.classList.remove('text-blue-600', 'border-b-2', 'border-blue-600', 'dark:text-blue-400', 'dark:border-blue-400');
       loginTab.classList.add('text-gray-400');
     } else {
       regFields.classList.add('hidden');
       submitBtn.innerText = 'Войти';
       formTitle.innerText = 'С возвращением!';
-      loginTab.classList.add('text-blue-600', 'border-b-2', 'border-blue-600');
-      registerTab.classList.remove('text-blue-600', 'border-b-2', 'border-blue-600');
+      loginTab.classList.add('text-blue-600', 'border-b-2', 'border-blue-600', 'dark:text-blue-400', 'dark:border-blue-400');
+      registerTab.classList.remove('text-blue-600', 'border-b-2', 'border-blue-600', 'dark:text-blue-400', 'dark:border-blue-400');
       registerTab.classList.add('text-gray-400');
     }
   }
@@ -73,20 +78,54 @@
   async function handleAuth(event) {
     event.preventDefault();
 
-    const identifier = document.getElementById('username').value;
-    const password = document.getElementById('password').value;
+    const usernameInput = document.getElementById('username'); // This is the login identifier
+    const passwordInput = document.getElementById('password');
+    const emailInput = document.getElementById('email'); // This is for registration email
+
+    const identifier = usernameInput.value;
+    const password = passwordInput.value;
+    let email = ''; // Will be set for registration
+
+    // --- Client-side validation ---
+
+    // Email validation (for registration email field or login username field if it's treated as email)
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (currentMode === 'register') {
+      email = emailInput.value;
+      if (!emailRegex.test(email)) {
+        alert('Пожалуйста, введите корректный адрес электронной почты для регистрации.');
+        return;
+      }
+    } else { // Login mode
+      // Assuming 'username' field can also be an email for login
+      if (!emailRegex.test(identifier)) {
+        alert('Пожалуйста, введите корректный адрес электронной почты или логин.');
+        return;
+      }
+    }
+
+    // Password validation
+    // At least 8 characters, one uppercase, one lowercase, one number, one special character
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).{8,}$/;
+    if (!passwordRegex.test(password)) {
+      alert('Пароль должен содержать минимум 8 символов, включая хотя бы одну заглавную букву, одну строчную букву, одну цифру и один специальный символ.');
+      return;
+    }
+
+    // --- End client-side validation ---
 
     let url = currentMode === 'login' ? '/api/auth/login' : '/api/auth/register';
 
     let bodyData = {
-      email: identifier,
+      email: identifier, // For login, identifier is used as email
       password: password
     };
 
     if (currentMode === 'register') {
       bodyData.fullName = document.getElementById('fullName').value;
-      bodyData.email = document.getElementById('email').value;
-      bodyData.username = identifier;
+      bodyData.email = email; // Use validated email for registration
+      bodyData.username = identifier; // Username is still identifier for registration
     }
 
     try {
@@ -113,20 +152,7 @@
     }
   }
 
-  function initDarkMode() {
-      const isDark = localStorage.getItem('darkMode') === 'true';
-      if (isDark) {
-          document.getElementById('htmlRoot').classList.add('dark');
-      }
-  }
-
-  function toggleDarkMode() {
-      const htmlRoot = document.getElementById('htmlRoot');
-      const isDark = htmlRoot.classList.toggle('dark');
-      localStorage.setItem('darkMode', isDark);
-  }
-
-  initDarkMode();
+  initThemeIcon();
 </script>
 </body>
 </html>

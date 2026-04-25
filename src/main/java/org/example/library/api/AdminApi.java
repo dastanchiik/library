@@ -30,7 +30,10 @@ public class AdminApi {
     private final AdminService adminService;
     private final OrderService orderService;
     private final BookService bookService;
+    private final UserService userService;
     private final ImageUploadService imageUploadService;
+
+    // --- Управление пользователями ---
 
     @GetMapping("/users")
     public ResponseEntity<List<UserResponse>> getAllUsers() {
@@ -39,17 +42,17 @@ public class AdminApi {
 
     @PostMapping("/users")
     public ResponseEntity<UserResponse> createUser(@RequestBody UserRegisterRequest request) {
-        return ResponseEntity.ok(adminService.registerUser(request));
+        return ResponseEntity.ok(userService.registerUser(request));
     }
 
     @GetMapping("/users/{id}")
     public ResponseEntity<UserResponse> getUserById(@PathVariable Long id) {
-        return ResponseEntity.ok(adminService.getProfile(id));
+        return ResponseEntity.ok(userService.getProfile(id));
     }
 
     @PutMapping("/users/update/{id}")
     public ResponseEntity<UserResponse> updateUser(@PathVariable Long id, @RequestBody UserRequest request) {
-        return ResponseEntity.ok(adminService.updateUser(id, request));
+        return ResponseEntity.ok(userService.updateUser(id, request));
     }
 
     @DeleteMapping("/users/{id}")
@@ -57,6 +60,8 @@ public class AdminApi {
         adminService.deleteUser(id);
         return ResponseEntity.ok(Map.of("message", "Пользователь удален успешно"));
     }
+
+    // --- Управление категориями ---
 
     @GetMapping("/categories")
     public ResponseEntity<List<String>> getAllCategories() {
@@ -66,6 +71,8 @@ public class AdminApi {
                         .toList()
         );
     }
+
+    // --- Управление книгами ---
 
     @GetMapping("/search/book/title")
     public ResponseEntity<List<BookResponse>> getAllBooksByTitle(@RequestParam String title) {
@@ -84,12 +91,12 @@ public class AdminApi {
 
     @GetMapping("/books")
     public ResponseEntity<List<BookResponse>> getAllBooks() {
-        return ResponseEntity.ok(adminService.getAllBooks());
+        return ResponseEntity.ok(bookService.getAllBooks());
     }
 
     @PostMapping("/books")
     public ResponseEntity<Map<String, String>> createBook(@RequestBody BookRequest request) {
-        adminService.addBook(request);
+        bookService.addBook(request);
         return ResponseEntity.ok(Map.of("message", "Книга добавлена"));
     }
 
@@ -106,15 +113,17 @@ public class AdminApi {
 
     @PutMapping("/books/{id}")
     public ResponseEntity<Map<String, String>> updateBook(@PathVariable Long id, @RequestBody BookRequest request) {
-        adminService.updateBook(id, request);
+        bookService.updateBook(id, request);
         return ResponseEntity.ok(Map.of("message", "Книга обновлена"));
     }
 
     @DeleteMapping("/books/{id}")
     public ResponseEntity<Map<String, String>> deleteBook(@PathVariable Long id) {
-        adminService.deleteBook(id);
+        bookService.deleteBook(id);
         return ResponseEntity.ok(Map.of("message", "Книга удалена"));
     }
+
+    // --- Управление заказами ---
 
     @GetMapping("/orders/search/isbn")
     public ResponseEntity<List<OrderResponse>> searchOrders(@RequestParam String isbn) {
@@ -128,7 +137,9 @@ public class AdminApi {
 
     @GetMapping("/orders")
     public ResponseEntity<List<OrderResponse>> getAllOrders() {
-        return ResponseEntity.ok(adminService.getAllOrdersAsDto());
+        return ResponseEntity.ok(orderService.getAllOrders().stream()
+                .map(OrderResponse::fromEntity)
+                .toList());
     }
 
     @GetMapping("/get/one/order/{id}")
@@ -148,12 +159,14 @@ public class AdminApi {
 
         try {
             OrderStatus status = OrderStatus.valueOf(statusStr.toUpperCase());
-            adminService.updateOrderStatus(id, status);
+            orderService.updateOrderStatus(id, status);
             return ResponseEntity.ok(Map.of("message", "Статус заказа #" + id + " изменен на " + status));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(Map.of("error", "Неверный статус: " + statusStr));
         }
     }
+
+    // --- Статистика ---
 
     @GetMapping("/stats")
     public ResponseEntity<Map<String, Object>> getStats() {

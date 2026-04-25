@@ -1,9 +1,10 @@
 <!DOCTYPE html>
-<html lang="ru" id="htmlRoot">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Профиль — BookCloud</title>
+    <script src="theme.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -21,7 +22,7 @@
             </svg>
         </button>
         <h1 class="text-xl font-bold text-gray-800 dark:text-white">Личный кабинет</h1>
-        <button onclick="toggleDarkMode()" class="ml-auto px-3 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white rounded-lg font-semibold hover:bg-gray-300 dark:hover:bg-gray-600 transition" id="themeBtnProfile">🌙</button>
+        <button onclick="toggleTheme()" class="ml-auto px-3 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white rounded-lg font-semibold hover:bg-gray-300 dark:hover:bg-gray-600 transition" id="themeIcon">🌙</button>
     </div>
 </nav>
 
@@ -66,8 +67,8 @@
 
     </div>
 </div>
-<div class="mt-10 pt-6 border-t border-gray-100 dark:border-gray-700">
-    <button onclick="logout()" class="w-full flex items-center justify-center gap-3 bg-red-50 dark:bg-red-800 text-red-600 dark:text-red-200 py-4 rounded-2xl font-bold hover:bg-red-100 dark:hover:bg-red-700 transition-colors group">
+<div class="mt-10 pt-6 border-t border-gray-100 dark:border-gray-700 max-w-4xl mx-auto px-4">
+    <button onclick="if(confirm('Вы точно хотите выйти?')) safeLogout()" class="w-full flex items-center justify-center gap-3 bg-red-50 dark:bg-red-800 text-red-600 dark:text-red-200 py-4 rounded-2xl font-bold hover:bg-red-100 dark:hover:bg-red-700 transition-colors group">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 0 013 3v1" />
         </svg>
@@ -75,13 +76,6 @@
     </button>
 </div>
 <script>
-    function logout() {
-        if (confirm("Вы точно хотите выйти из системы?")) {
-            localStorage.clear();
-
-            window.location.href = 'welcome.html';
-        }
-    }
     const USER_ID = localStorage.getItem('userId');
     const token = localStorage.getItem('token');
 
@@ -129,23 +123,7 @@
         }
     }
 
-    function initDarkMode() {
-        const isDark = localStorage.getItem('darkMode') === 'true';
-        if (isDark) {
-            document.getElementById('htmlRoot').classList.add('dark');
-            document.getElementById('themeBtnProfile').textContent = '☀️';
-        }
-    }
-
-    function toggleDarkMode() {
-        const htmlRoot = document.getElementById('htmlRoot');
-        const isDark = htmlRoot.classList.toggle('dark');
-        localStorage.setItem('darkMode', isDark);
-        document.getElementById('themeBtnProfile').textContent = isDark ? '☀️' : '🌙';
-    }
-
-    initDarkMode();
-
+    initThemeIcon();
     fetchProfile();
 </script>
 </body>
