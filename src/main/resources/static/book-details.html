@@ -11,6 +11,12 @@
     </script>
     <style>
         body { transition: background-color 0.3s, color 0.3s; }
+        /* Убираем стрелочки у input type="number" */
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
     </style>
 </head>
 <body class="bg-gray-50 text-gray-900 min-h-screen font-sans dark:bg-[#0f172a] dark:text-white">
@@ -64,6 +70,11 @@
         container.innerHTML = `
         <div class="w-full lg:w-[450px]">
             <div class="relative bg-white dark:bg-gray-800 rounded-[3rem] p-6 shadow-2xl border border-gray-100 dark:border-gray-700">
+                ${b.category ? `
+                    <span class="absolute top-10 left-10 px-4 py-2 bg-blue-600 text-white text-xs font-black rounded-full uppercase tracking-[0.2em] z-10 shadow-xl">
+                        ${b.category}
+                    </span>
+                ` : ''}
                 <div class="aspect-[3/4] rounded-[2rem] overflow-hidden bg-gray-50 dark:bg-[#1e293b] flex items-center justify-center">
                     ${b.imageURL ?
             `<img src="${b.imageURL}" class="w-full h-full object-cover" onerror="this.parentElement.innerHTML=getPlaceholder()">` :
@@ -82,21 +93,48 @@
                 <p class="text-gray-600 dark:text-gray-300 text-lg leading-relaxed font-medium">
                     ${b.description || 'Описание для этой книги пока не добавлено.'}
                 </p>
+                <div class="mt-6 pt-6 border-t border-gray-100 dark:border-gray-700/50">
+                    <p class="text-[11px] font-black uppercase tracking-[0.2em] text-gray-400 mb-2">Наличие</p>
+                    <span class="${b.stock > 0 ? 'text-green-500' : 'text-red-500'} font-bold text-xl uppercase italic">
+                        ${b.stock > 0 ? `На складе: ${b.stock} шт.` : 'Нет в наличии'}
+                    </span>
+                </div>
             </div>
 
-            <div class="bg-white dark:bg-gray-800/80 border border-gray-100 dark:border-gray-700 p-6 rounded-[2.5rem] flex items-center justify-between shadow-lg">
+            <div class="bg-white dark:bg-gray-800/80 border border-gray-100 dark:border-gray-700 p-6 rounded-[2.5rem] flex flex-wrap items-center justify-between gap-6 shadow-lg">
                 <div>
-                    <p class="text-gray-400 dark:text-gray-500 text-[10px] font-black uppercase tracking-widest mb-1">Цена</p>
+                    <p class="text-gray-400 dark:text-gray-500 text-[10px] font-black uppercase tracking-widest mb-1">Цена за шт.</p>
                     <p class="text-3xl font-black text-blue-600 dark:text-blue-500">${b.price} сом</p>
                 </div>
 
-                <button onclick="buyNow(${b.id})"
-                        class="bg-blue-600 hover:bg-blue-500 text-white px-16 py-5 rounded-2xl font-black text-xl uppercase italic tracking-tighter shadow-xl shadow-blue-600/20 transition-all active:scale-95">
-                    Купить сейчас
-                </button>
+                <div class="flex items-center gap-4">
+                    <div class="flex flex-col">
+                        <p class="text-gray-400 dark:text-gray-500 text-[10px] font-black uppercase tracking-widest mb-1 ml-2">Кол-во</p>
+                        <div class="flex items-center bg-gray-100 dark:bg-gray-700 rounded-2xl p-2 h-[60px]">
+                            <button onclick="changeQty(-1)" class="w-10 h-10 flex items-center justify-center font-bold text-xl hover:bg-gray-200 dark:hover:bg-gray-600 rounded-xl transition">-</button>
+                            <input type="number" id="qtyInput" value="1" min="1" max="${b.stock}" 
+                                   class="w-16 bg-transparent text-center font-black text-2xl focus:outline-none dark:text-white" readonly>
+                            <button onclick="changeQty(1, ${b.stock})" class="w-10 h-10 flex items-center justify-center font-bold text-xl hover:bg-gray-200 dark:hover:bg-gray-600 rounded-xl transition">+</button>
+                        </div>
+                    </div>
+                    
+                    <button onclick="buyNow(${b.id})"
+                            class="bg-blue-600 hover:bg-blue-500 text-white px-10 h-[60px] mt-4 rounded-2xl font-black text-xl uppercase italic tracking-tighter shadow-xl shadow-blue-600/20 transition-all active:scale-95 disabled:opacity-50 disabled:grayscale"
+                            ${b.stock <= 0 ? 'disabled' : ''}>
+                        Купить сейчас
+                    </button>
+                </div>
             </div>
         </div>
     `;
+    }
+
+    function changeQty(delta, max) {
+        const input = document.getElementById('qtyInput');
+        let val = parseInt(input.value) + delta;
+        if (val < 1) val = 1;
+        if (max && val > max) val = max;
+        input.value = val;
     }
 
     function getPlaceholder() {
@@ -107,14 +145,23 @@
 
     async function buyNow(id) {
         if (!TOKEN) { alert("Войдите в аккаунт"); return; }
-        try {
-            const res = await fetch(`${API_ORDER}/buy?userId=${USER_ID}&bookId=${id}`, {
-                method: 'POST',
-                headers: { 'Authorization': `Bearer ${TOKEN}` }
-            });
-            if (res.ok) alert("✅ Книга куплена!");
-            else alert("❌ Недостаточно средств");
-        } catch (e) { alert("Ошибка сети"); }
+        const quantity = document.getElementById('qtyInput').value;
+        
+        if (confirm(`Вы уверены, что хотите купить ${quantity} шт.?`)) {
+            try {
+                const res = await fetch(`${API_ORDER}/buy?userId=${USER_ID}&bookId=${id}&quantity=${quantity}`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${TOKEN}` }
+                });
+                if (res.ok) {
+                    alert("✅ Покупка успешно совершена!");
+                    location.reload(); // Обновляем страницу, чтобы увидеть новый остаток
+                } else {
+                    const errData = await res.json();
+                    alert("❌ Ошибка: " + (errData.message || "Недостаточно средств или товара на складе"));
+                }
+            } catch (e) { alert("Ошибка сети"); }
+        }
     }
 
     function renderAuth() {

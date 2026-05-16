@@ -4,350 +4,419 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Управление книгами - BookCloud Admin</title>
-    <script src="theme.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="theme.js"></script>
     <script>
-        tailwind.config = { darkMode: 'class' }
+        applyTheme();
     </script>
-    <style>
-        .book-card-img { height: 200px; width: 100%; object-fit: contain; background-color: #f3f4f6; }
-        .dark .book-card-img { background-color: #1f2937; }
-        body { transition: background-color 0.3s, color 0.3s; }
-    </style>
 </head>
-<body class="bg-gray-100 dark:bg-gray-900 transition-colors duration-300">
+<body class="bg-[#111827] text-gray-100 transition-colors duration-200 min-h-screen">
+<div class="flex h-screen overflow-hidden">
 
-<div class="flex h-screen">
-    <!-- Sidebar -->
-    <div class="w-64 bg-gray-900 dark:bg-gray-950 text-white flex flex-col">
-        <div class="p-6 border-b border-gray-700">
-            <h1 class="text-2xl font-black">📚 BookCloud</h1>
-            <p class="text-gray-400 text-sm">Admin Panel</p>
+    <div class="w-64 bg-[#1f293d] flex flex-col justify-between p-6 shadow-xl border-r border-gray-800">
+        <div>
+            <div class="mb-8">
+                <h1 class="text-2xl font-bold text-white flex items-center gap-2">
+                    📚 BookCloud
+                </h1>
+                <p class="text-xs text-gray-400 mt-1">Admin Panel</p>
+            </div>
+            <nav class="space-y-2">
+                <a href="admin-dashboard.html" class="flex items-center gap-3 py-3 px-4 rounded-lg transition duration-200 text-gray-400 hover:bg-gray-800 hover:text-white">
+                    📊 <span>Dashboard</span>
+                </a>
+                <a href="admin-profile.html" class="flex items-center gap-3 py-3 px-4 rounded-lg transition duration-200 text-gray-400 hover:bg-gray-800 hover:text-white">
+                    👤 <span>Мой профиль</span>
+                </a>
+                <a href="admin-users.html" class="flex items-center gap-3 py-3 px-4 rounded-lg transition duration-200 text-gray-400 hover:bg-gray-800 hover:text-white">
+                    👥 <span>Пользователи</span>
+                </a>
+                <a href="admin-books.html" class="flex items-center gap-3 py-3 px-4 rounded-lg transition duration-200 bg-blue-600 text-white shadow-lg shadow-blue-600/30">
+                    📖 <span>Книги</span>
+                </a>
+                <a href="admin-orders.html" class="flex items-center gap-3 py-3 px-4 rounded-lg transition duration-200 text-gray-400 hover:bg-gray-800 hover:text-white">
+                    📜 <span>Заказы</span>
+                </a>
+                <a href="admin-categories.html" class="flex items-center gap-3 py-3 px-4 rounded-lg transition duration-200 text-gray-400 hover:bg-gray-800 hover:text-white">
+                    🏷️ <span>Категории</span>
+                </a>
+            </nav>
         </div>
-        <nav class="flex-1 p-6 space-y-2">
-            <a href="admin-dashboard.html" class="block px-4 py-3 text-gray-300 hover:bg-gray-800 rounded-lg transition">📊 Dashboard</a>
-            <a href="admin-profile.html" class="block px-4 py-3 text-gray-300 hover:bg-gray-800 rounded-lg transition">👤 Мой профиль</a>
-            <div class="my-4 border-t border-gray-800"></div>
-            <a href="admin-users.html" class="block px-4 py-3 text-gray-300 hover:bg-gray-800 rounded-lg transition">👥 Пользователи</a>
-            <a href="admin-books.html" class="block px-4 py-3 bg-blue-600 text-white rounded-lg transition">📖 Книги</a>
-            <a href="admin-orders.html" class="block px-4 py-3 text-gray-300 hover:bg-gray-800 rounded-lg transition">📋 Заказы</a>
-            <a href="admin-categories.html" class="block px-4 py-3 text-gray-300 hover:bg-gray-800 rounded-lg transition">🏷️ Категории</a>
-        </nav>
-        <div class="p-6 border-t border-gray-700 space-y-2">
-            <button onclick="toggleTheme()" class="w-full px-4 py-2 bg-gray-800 text-gray-300 rounded-lg text-sm border border-gray-700 hover:bg-gray-700 transition">
-                <span id="themeIcon">🌙 Темный режим</span>
+
+        <div class="space-y-3">
+            <a href="index.html" class="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg bg-gray-800 hover:bg-gray-700 text-sm font-medium transition text-center text-gray-200">
+                🌐 На сайт
+            </a>
+            <button onclick="window.safeLogout()" class="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-lg bg-red-600/20 hover:bg-red-600 text-red-400 hover:text-white text-sm font-bold transition">
+                🚪 Выход
             </button>
-            <button onclick="safeLogout()" class="w-full px-4 py-3 bg-red-600 hover:bg-red-700 rounded-lg font-semibold transition">🚪 Выход</button>
         </div>
     </div>
 
-    <!-- Main Content -->
-    <div class="flex-1 flex flex-col overflow-hidden">
-        <div class="bg-white dark:bg-gray-800 shadow-sm p-6 flex justify-between items-center border-b dark:border-gray-700">
-            <h2 class="text-3xl font-bold text-gray-900 dark:text-white" id="pageTitle">Управление книгами</h2>
-            <button onclick="openModal()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-bold transition flex items-center gap-2">
-                <span>+</span> Добавить книгу
+    <div class="flex-1 overflow-auto p-10 bg-[#111827]">
+        <div class="flex justify-between items-center mb-8">
+            <h2 class="text-3xl font-bold text-white">Управление книгами</h2>
+            <div class="flex gap-4 items-center">
+                <button onclick="window.toggleTheme()" class="p-2.5 rounded-lg bg-gray-800 hover:bg-gray-700 transition-colors border border-gray-700">
+                    <span id="themeIcon">🌙</span>
+                </button>
+                <button onclick="showAddModal()" class="bg-blue-600 text-white px-6 py-2.5 rounded-lg hover:bg-blue-700 transition font-medium shadow-lg shadow-blue-600/20">
+                    Добавить книгу
+                </button>
+            </div>
+        </div>
+
+        <form onsubmit="event.preventDefault(); searchBooks();" class="bg-[#1f293d] p-4 rounded-xl border border-gray-800 mb-6 flex gap-4">
+            <input type="text" id="searchInput" placeholder="Поиск по названию..."
+                   class="flex-1 bg-[#111827] border border-gray-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-500">
+            <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition font-medium">
+                Найти
             </button>
-        </div>
+        </form>
 
-        <!-- Filters -->
-        <div class="p-6 bg-white dark:bg-gray-800 border-b dark:border-gray-700 flex flex-wrap gap-4 items-center">
-            <div class="relative flex-1 min-w-[200px]">
-                <input type="text" id="searchInput" placeholder="Поиск по названию..."
-                       class="w-full pl-10 pr-4 py-2 rounded-lg border dark:bg-gray-700 dark:border-gray-600 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none">
-                <span class="absolute left-3 top-2.5 text-gray-400">🔍</span>
-            </div>
-            <select id="categoryFilter" onchange="handleCategoryFilterChange()"
-                    class="px-4 py-2 rounded-lg border dark:bg-gray-700 dark:border-gray-600 dark:text-white outline-none">
-                <option value="">Все категории</option>
-                <option value="ФАНТАСТИКА">ФАНТАСТИКА</option>
-                <option value="ДЕТЕКТИВ">ДЕТЕКТИВ</option>
-                <option value="РОМАН">РОМАН</option>
-                <option value="УЖАСЫ">УЖАСЫ</option>
-                <option value="КЛАССИКА">КЛАССИКА</option>
-                <option value="ПСИХОЛОГИЯ">ПСИХОЛОГИЯ</option>
-                <option value="БИЗНЕС">БИЗНЕС</option>
-                <option value="ПРОГРАММИРОВАНИЕ">ПРОГРАММИРОВАНИЕ</option>
-            </select>
-        </div>
-
-        <div class="flex-1 overflow-auto p-6" id="booksContainer">
-            <div class="flex justify-center items-center h-64">
-                <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-            </div>
+        <div id="booksGrid" class="grid grid-cols-1 xl:grid-cols-2 gap-6">
         </div>
     </div>
 </div>
 
-<!-- Modal -->
-<div id="bookModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-        <div class="p-6 border-b dark:border-gray-700 flex justify-between items-center sticky top-0 bg-white dark:bg-gray-800 z-10">
-            <h3 id="modalTitle" class="text-2xl font-black text-gray-900 dark:text-white">Добавить книгу</h3>
-            <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition text-2xl">&times;</button>
-        </div>
-
-        <form id="bookForm" class="p-6 space-y-6">
+<div id="modal" class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+    <div class="bg-[#1f293d] border border-gray-800 rounded-xl p-8 max-w-2xl w-full shadow-2xl">
+        <h3 id="modalTitle" class="text-2xl font-bold mb-6 text-white">Редактировать книгу</h3>
+        <form id="bookForm" class="grid grid-cols-2 gap-4">
             <input type="hidden" id="bookId">
-            <input type="hidden" id="imageURL">
-            <input type="hidden" id="isbn" value="000-000">
-            <input type="hidden" id="stock" value="100">
-            <input type="hidden" id="salesCount" value="0">
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="space-y-2">
-                    <label class="block text-sm font-bold text-gray-700 dark:text-gray-300">Название</label>
-                    <input type="text" id="title" required class="w-full px-4 py-3 rounded-xl border dark:bg-gray-700 dark:border-gray-600 dark:text-white outline-none">
-                </div>
-                <div class="space-y-2">
-                    <label class="block text-sm font-bold text-gray-700 dark:text-gray-300">Автор</label>
-                    <input type="text" id="author" required class="w-full px-4 py-3 rounded-xl border dark:bg-gray-700 dark:border-gray-600 dark:text-white outline-none">
-                </div>
-                <div class="space-y-2">
-                    <label class="text-xs font-black uppercase tracking-widest text-gray-400 ml-2">Категория</label>
-                    <select id="category" required class="w-full px-5 py-4 rounded-2xl border-none bg-gray-100 dark:bg-gray-700 dark:text-white outline-none focus:ring-2 focus:ring-blue-500 font-bold">
-                        <option value="FICTION">FICTION</option>
-                        <option value="HISTORY">HISTORY</option>
-                        <option value="POETRY">POETRY</option>
-                        <option value="SCIENCE">SCIENCE</option>
-                        <option value="ART">ART</option>
-                        <option value="LIFESTYLE">LIFESTYLE</option>
-                        <option value="TRAVEL">TRAVEL</option>
-                        <option value="PHILOSOPHY">PHILOSOPHY</option>
-                    </select>
-                </div>
-                <div class="space-y-2">
-                    <label class="block text-sm font-bold text-gray-700 dark:text-gray-300">Цена (сом)</label>
-                    <input type="number" id="price" required class="w-full px-4 py-3 rounded-xl border dark:bg-gray-700 dark:border-gray-600 dark:text-white outline-none">
+            <div class="col-span-2">
+                <label class="block text-sm font-medium text-gray-400 mb-1">Название</label>
+                <input type="text" id="title" required class="w-full bg-[#111827] border border-gray-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-400 mb-1">Автор</label>
+                <input type="text" id="author" required class="w-full bg-[#111827] border border-gray-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-400 mb-1">Категория</label>
+                <select id="category" required class="w-full bg-[#111827] border border-gray-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </select>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-400 mb-1">Цена (сом)</label>
+                <input type="number" step="0.01" id="price" required class="w-full bg-[#111827] border border-gray-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-400 mb-1">Склад</label>
+                <input type="number" id="stock" required class="w-full bg-[#111827] border border-gray-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+
+            <div class="col-span-2">
+                <label class="block text-sm font-medium text-gray-400 mb-1">Обложка книги</label>
+                <input type="hidden" id="imageURL" required>
+                <div class="flex items-center gap-4 bg-[#111827] p-3 border border-gray-700 rounded-lg">
+                    <div class="w-16 h-20 bg-gray-800 rounded overflow-hidden flex-shrink-0 border border-gray-700 flex items-center justify-center text-xs text-gray-500">
+                        <img id="modalImagePreview" src="" class="w-full h-full object-cover hidden">
+                        <span id="modalImagePlaceholder">Нет фото</span>
+                    </div>
+                    <div class="flex-1">
+                        <input type="file" id="imageFileInput" accept="image/*" class="hidden" onchange="uploadFile(this)">
+                        <button type="button" onclick="document.getElementById('imageFileInput').click()" class="bg-gray-800 hover:bg-gray-700 text-gray-200 border border-gray-600 px-4 py-2 rounded-lg text-sm font-medium transition">
+                            Выбрать изображение...
+                        </button>
+                        <p id="uploadStatus" class="text-xs text-gray-500 mt-1">Файл не выбран</p>
+                    </div>
                 </div>
             </div>
 
-            <div class="space-y-2">
-                <label class="block text-sm font-bold text-gray-700 dark:text-gray-300">Описание</label>
-                <textarea id="description" rows="3" class="w-full px-4 py-3 rounded-xl border dark:bg-gray-700 dark:border-gray-600 dark:text-white outline-none"></textarea>
+            <div class="col-span-2">
+                <label class="block text-sm font-medium text-gray-400 mb-1">Описание</label>
+                <textarea id="description" rows="3" required class="w-full bg-[#111827] border border-gray-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
             </div>
-
-            <div class="space-y-2">
-                <label class="block text-sm font-bold text-gray-700 dark:text-gray-300">Обложка</label>
-                <div class="flex items-center gap-4">
-                    <input type="file" id="imageFile" accept="image/*" onchange="uploadImage()" class="hidden">
-                    <button type="button" onclick="document.getElementById('imageFile').click()" class="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 rounded-lg">Выбрать файл</button>
-                    <span id="uploadStatus" class="text-sm"></span>
-                </div>
-                <div id="imagePreview" class="mt-2 hidden">
-                    <img src="" alt="Preview" class="h-32 rounded-lg shadow-md">
-                </div>
-            </div>
-
-            <div class="pt-6 border-t dark:border-gray-700 flex gap-3 justify-end sticky bottom-0 bg-white dark:bg-gray-800 pb-2">
-                <button type="button" onclick="closeModal()" class="px-6 py-3 rounded-xl border dark:border-gray-600 dark:text-white font-bold">Отмена</button>
-                <button type="submit" id="saveBtn" class="px-8 py-3 bg-blue-600 text-white rounded-xl shadow-lg font-bold">Сохранить</button>
+            <div class="col-span-2 flex justify-end gap-3 mt-4">
+                <button type="button" onclick="hideModal()" class="px-6 py-2 border border-gray-700 rounded-lg text-gray-300 hover:bg-gray-800 transition">Отмена</button>
+                <button type="submit" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium">Сохранить</button>
             </div>
         </form>
     </div>
 </div>
 
 <script>
-    const apiBase = '/api/admin';
+    const token = localStorage.getItem('token');
+    if (!token) window.location.href = 'admin-login.html';
+
     let currentBooks = [];
 
-    initThemeIcon();
-
-    async function openModal(bookId = null) {
-        const modal = document.getElementById('bookModal');
-        const form = document.getElementById('bookForm');
-        modal.classList.remove('hidden');
-        form.reset();
-        document.getElementById('imagePreview').classList.add('hidden');
-        document.getElementById('uploadStatus').textContent = '';
-
-        if (bookId) {
-            const book = currentBooks.find(b => b.id === bookId);
-            if (book) {
-                document.getElementById('modalTitle').textContent = 'Редактировать книгу';
-                document.getElementById('bookId').value = book.id;
-                document.getElementById('title').value = book.title;
-                document.getElementById('author').value = book.author;
-                document.getElementById('category').value = book.category;
-                document.getElementById('price').value = book.price;
-                document.getElementById('description').value = book.description || '';
-                document.getElementById('imageURL').value = book.imageURL || '';
-                document.getElementById('isbn').value = book.isbn || '000-000';
-                document.getElementById('stock').value = book.stock || 100;
-                document.getElementById('salesCount').value = book.salesCount || 0;
-
-                if (book.imageURL) {
-                    document.getElementById('imagePreview').querySelector('img').src = book.imageURL;
-                    document.getElementById('imagePreview').classList.remove('hidden');
-                }
-            }
-        } else {
-            document.getElementById('modalTitle').textContent = 'Добавить книгу';
-            document.getElementById('bookId').value = '';
-            document.getElementById('isbn').value = '000-000';
-            document.getElementById('stock').value = 100;
-            document.getElementById('salesCount').value = 0;
-            document.getElementById('imageURL').value = '';
-        }
+    function escapeHtml(text) {
+        if (text === null || text === undefined) return '';
+        return String(text)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#039;');
     }
 
-    function closeModal() { document.getElementById('bookModal').classList.add('hidden'); }
+    function getImageUrl(url) {
+        if (!url) return 'https://via.placeholder.com/128x176?text=Нет+фото';
+        if (url.startsWith('/')) {
+            return window.location.origin + url;
+        }
+        return url;
+    }
 
-    async function uploadImage() {
-        const fileInput = document.getElementById('imageFile');
-        const status = document.getElementById('uploadStatus');
-        if (!fileInput.files[0]) return;
+    // Асинхронная загрузка файла на сервер при выборе
+    async function uploadFile(input) {
+        const file = input.files[0];
+        if (!file) return;
+
+        const statusText = document.getElementById('uploadStatus');
+        statusText.innerText = 'Загрузка...';
+        statusText.className = 'text-xs text-blue-400 mt-1';
 
         const formData = new FormData();
-        formData.append('file', fileInput.files[0]);
-        status.textContent = '⏳ Загрузка...';
+        formData.append('file', file);
 
         try {
             const response = await fetch('/api/admin/books/upload-image', {
                 method: 'POST',
-                headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') },
+                headers: { 'Authorization': `Bearer ${token}` },
                 body: formData
             });
+
             if (response.ok) {
                 const data = await response.json();
+
+                // Записываем полученный URL в скрытое поле
                 document.getElementById('imageURL').value = data.imageURL;
-                document.getElementById('imagePreview').querySelector('img').src = data.imageURL;
-                document.getElementById('imagePreview').classList.remove('hidden');
-                status.textContent = '✅ Готово';
-                status.className = 'text-sm text-green-500';
+
+                // Обновляем превью в модальном окне
+                const previewImg = document.getElementById('modalImagePreview');
+                previewImg.src = getImageUrl(data.imageURL);
+                previewImg.classList.remove('hidden');
+                document.getElementById('modalImagePlaceholder').classList.add('hidden');
+
+                statusText.innerText = 'Успешно загружено!';
+                statusText.className = 'text-xs text-emerald-400 mt-1';
             } else {
-                status.textContent = '❌ Ошибка';
-                status.className = 'text-sm text-red-500';
+                statusText.innerText = 'Ошибка при загрузке файла';
+                statusText.className = 'text-xs text-red-400 mt-1';
             }
-        } catch (e) { status.textContent = '❌ Ошибка сети'; }
-    }
-
-    async function fetchBooks() {
-        const urlParams = new URLSearchParams(window.location.search);
-        const category = urlParams.get('category');
-        let url = category ? `${apiBase}/search/book/category?category=${encodeURIComponent(category)}` : `${apiBase}/books`;
-
-        try {
-            const response = await fetch(url, {
-                headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') }
-            });
-            currentBooks = await response.json();
-            renderBooks(currentBooks);
-        } catch (e) {
-            document.getElementById('booksContainer').innerHTML = '<p class="text-red-500">Ошибка загрузки</p>';
+        } catch (error) {
+            console.error('Ошибка загрузки:', error);
+            statusText.innerText = 'Ошибка соединения с сервером';
+            statusText.className = 'text-xs text-red-400 mt-1';
         }
     }
 
-    // Отрисовка карточек
-    function renderBooks(books) {
-        const container = document.getElementById('booksContainer');
-        if (!books.length) {
-            container.innerHTML = '<p class="text-gray-500 text-center py-20 font-bold italic opacity-30 text-2xl">КНИГ ПОКА НЕТ</p>';
+    async function loadBooks() {
+        try {
+            const response = await fetch('/api/admin/books', {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            currentBooks = await response.json();
+            renderCards(currentBooks);
+        } catch (error) {
+            console.error('Ошибка загрузки книг:', error);
+        }
+    }
+
+    async function searchBooks() {
+        const query = document.getElementById('searchInput').value.trim();
+        if (!query) {
+            loadBooks();
             return;
         }
 
-        container.innerHTML = `<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-        ${books.map(book => {
-            const coverUrl = book.imageURL && book.imageURL.trim() !== ''
-                ? book.imageURL
-                : `https://picsum.photos/seed/${book.id}/300/400`;
-
-            return `
-            <div class="bg-white dark:bg-gray-800 rounded-[2.5rem] shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden flex flex-col hover:shadow-2xl transition-all group">
-                <div class="relative">
-                    <img src="${coverUrl}"
-                         class="book-card-img" alt="${book.title}"
-                         onerror="this.onerror=null; this.src='https://picsum.photos/300/400?grayscale';">
-                    <div class="absolute top-4 right-4 bg-blue-600 text-white text-[10px] font-black px-3 py-1 rounded-full shadow-lg">
-                        ${book.category}
-                    </div>
-                </div>
-
-                <div class="p-6 flex-1">
-                    <h3 class="font-black text-gray-900 dark:text-white text-xl line-clamp-1 uppercase tracking-tighter italic">${book.title || 'БЕЗ НАЗВАНИЯ'}</h3>
-                    <p class="text-sm font-bold text-blue-500 mt-1 uppercase tracking-widest">${book.author || 'Автор неизвестен'}</p>
-
-                    <div class="mt-6 flex justify-between items-center bg-gray-50 dark:bg-gray-900/50 p-4 rounded-2xl">
-                        <div>
-                            <p class="text-[10px] font-black text-gray-400 uppercase">Цена</p>
-                            <p class="font-black text-blue-600 text-lg">${book.price} сом</p>
-                        </div>
-                        <div class="text-right">
-                            <p class="text-[10px] font-black text-gray-400 uppercase">Склад</p>
-                            <p class="font-black ${book.stock < 5 ? 'text-red-500' : 'text-gray-600 dark:text-gray-300'} text-lg">${book.stock} шт</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="p-4 bg-white dark:bg-gray-800 border-t dark:border-gray-700 grid grid-cols-2 gap-3">
-                    <button onclick="openModal(${book.id})" class="py-3 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 rounded-xl text-xs font-black uppercase hover:bg-blue-600 hover:text-white transition">Изменить</button>
-                    <button onclick="deleteBook(${book.id})" class="py-3 bg-red-50 text-red-500 rounded-xl text-xs font-black uppercase hover:bg-red-500 hover:text-white transition">Удалить</button>
-                </div>
-            </div>`;
-        }).join('')}
-    </div>`;
+        try {
+            const response = await fetch(`/api/admin/search/book/title?title=${encodeURIComponent(query)}`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            if (response.ok) {
+                currentBooks = await response.json();
+                renderCards(currentBooks);
+            } else {
+                currentBooks = [];
+                renderCards([]);
+            }
+        } catch (error) {
+            console.error('Ошибка поиска:', error);
+            currentBooks = [];
+            renderCards([]);
+        }
     }
 
-    function handleCategoryFilterChange() {
-        const cat = document.getElementById('categoryFilter').value;
-        window.location.href = cat ? `admin-books.html?category=${encodeURIComponent(cat)}` : 'admin-books.html';
+    async function loadCategories() {
+        try {
+            const response = await fetch('/api/admin/categories', {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const categories = await response.json();
+            const select = document.getElementById('category');
+            select.innerHTML = categories.map(c => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join('');
+        } catch (error) {
+            console.error('Ошибка загрузки категорий:', error);
+        }
+    }
+
+    function renderCards(books) {
+        const grid = document.getElementById('booksGrid');
+        if (!books || books.length === 0) {
+            grid.innerHTML = `<div class="col-span-full py-8 text-center text-gray-500">Книги не найдены</div>`;
+            return;
+        }
+
+        grid.innerHTML = books.map(book => `
+            <div class="bg-[#1f293d] border border-gray-800 rounded-xl p-5 flex gap-5 hover:border-gray-700 transition shadow-lg">
+                <div class="w-32 h-44 flex-shrink-0 bg-gray-900 rounded-lg overflow-hidden border border-gray-700 shadow-md">
+                    <img src="${getImageUrl(book.imageURL)}" alt="${escapeHtml(book.title)}" class="w-full h-full object-cover" onerror="this.src='https://via.placeholder.com/128x176?text=Ошибка+фото'">
+                </div>
+
+                <div class="flex-1 flex flex-col justify-between">
+                    <div>
+                        <div class="flex justify-between items-start gap-2">
+                            <h4 class="text-xl font-bold text-white line-clamp-1">${escapeHtml(book.title)}</h4>
+                            <span class="text-xs text-gray-500 font-mono">#${escapeHtml(book.id)}</span>
+                        </div>
+                        <p class="text-sm text-gray-400 mt-0.5">Автор: <span class="text-gray-300">${escapeHtml(book.author)}</span></p>
+                        <p class="text-xs text-gray-400 mt-1">Категория: <span class="text-blue-400 font-medium">${escapeHtml(book.category)}</span></p>
+
+                        <div class="grid grid-cols-3 gap-2 mt-4 bg-[#111827]/60 p-3 rounded-lg text-center border border-gray-800/50">
+                            <div>
+                                <span class="block text-[10px] uppercase tracking-wider text-gray-500">Цена</span>
+                                <span class="text-sm font-bold text-emerald-400">${escapeHtml(book.price)} сом</span>
+                            </div>
+                            <div>
+                                <span class="block text-[10px] uppercase tracking-wider text-gray-500">Склад</span>
+                                <span class="text-sm font-semibold text-gray-200">${escapeHtml(book.stock)}</span>
+                            </div>
+                            <div>
+                                <span class="block text-[10px] uppercase tracking-wider text-gray-500">Продажи</span>
+                                <span class="text-sm font-semibold text-gray-200">${escapeHtml(book.salesCount || 0)}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-end gap-3 mt-4">
+                        <button onclick="editBookById(${book.id})" class="px-4 py-1.5 bg-gray-800 hover:bg-gray-700 text-blue-400 hover:text-blue-300 rounded-lg text-sm font-medium transition border border-gray-700">
+                            Изменить
+                        </button>
+                        <button onclick="deleteBook(${book.id})" class="px-4 py-1.5 bg-red-600/10 hover:bg-red-600 text-red-400 hover:text-white rounded-lg text-sm font-medium transition border border-red-500/20">
+                            Удалить
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function showAddModal() {
+        document.getElementById('modalTitle').innerText = 'Добавить книгу';
+        document.getElementById('bookForm').reset();
+        document.getElementById('bookId').value = '';
+        document.getElementById('imageURL').value = '';
+
+        // Сброс превью
+        document.getElementById('modalImagePreview').classList.add('hidden');
+        document.getElementById('modalImagePlaceholder').classList.remove('hidden');
+        document.getElementById('uploadStatus').innerText = 'Файл не выбран';
+        document.getElementById('uploadStatus').className = 'text-xs text-gray-500 mt-1';
+
+        document.getElementById('modal').classList.remove('hidden');
+    }
+
+    function hideModal() {
+        document.getElementById('modal').classList.add('hidden');
+    }
+
+    function editBookById(id) {
+        const book = currentBooks.find(b => b.id === id);
+        if (!book) return;
+
+        document.getElementById('modalTitle').innerText = 'Редактировать книгу';
+        document.getElementById('bookId').value = book.id;
+        document.getElementById('title').value = book.title;
+        document.getElementById('author').value = book.author;
+        document.getElementById('category').value = book.category;
+        document.getElementById('price').value = book.price;
+        document.getElementById('stock').value = book.stock;
+        document.getElementById('description').value = book.description || '';
+
+        // Установка старого фото в превью модалки
+        const imgUrl = book.imageURL || '';
+        document.getElementById('imageURL').value = imgUrl;
+
+        const previewImg = document.getElementById('modalImagePreview');
+        if (imgUrl) {
+            previewImg.src = getImageUrl(imgUrl);
+            previewImg.classList.remove('hidden');
+            document.getElementById('modalImagePlaceholder').classList.add('hidden');
+            document.getElementById('uploadStatus').innerText = 'Текущее изображение';
+            document.getElementById('uploadStatus').className = 'text-xs text-gray-400 mt-1';
+        } else {
+            previewImg.classList.add('hidden');
+            document.getElementById('modalImagePlaceholder').classList.remove('hidden');
+            document.getElementById('uploadStatus').innerText = 'Файл не выбран';
+        }
+
+        document.getElementById('modal').classList.remove('hidden');
     }
 
     document.getElementById('bookForm').onsubmit = async (e) => {
         e.preventDefault();
-        const saveBtn = document.getElementById('saveBtn');
-        saveBtn.disabled = true;
-        saveBtn.textContent = '⌛ Сохранение...';
-
         const id = document.getElementById('bookId').value;
-        const data = {
-            title: document.getElementById('title').value,
-            author: document.getElementById('author').value,
+
+        const bookData = {
+            title: document.getElementById('title').value.trim(),
+            author: document.getElementById('author').value.trim(),
             category: document.getElementById('category').value,
-            price: parseInt(document.getElementById('price').value),
-            salesCount: parseInt(document.getElementById('salesCount').value),
-            imageURL: document.getElementById('imageURL').value,
-            description: document.getElementById('description').value,
-            isbn: document.getElementById('isbn').value,
-            stock: parseInt(document.getElementById('stock').value)
+            price: Number(document.getElementById('price').value),
+            stock: parseInt(document.getElementById('stock').value, 10),
+            imageURL: document.getElementById('imageURL').value.trim(),
+            description: document.getElementById('description').value.trim()
         };
 
+        const url = id ? `/api/admin/books/${id}` : '/api/admin/books';
+        const method = id ? 'PUT' : 'POST';
+
         try {
-            const response = await fetch(id ? `${apiBase}/books/${id}` : `${apiBase}/books`, {
-                method: id ? 'PUT' : 'POST',
+            const response = await fetch(url, {
+                method: method,
                 headers: {
-                    'Authorization': 'Bearer ' + localStorage.getItem('token'),
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
                 },
-                body: JSON.stringify(data)
+                body: JSON.stringify(bookData)
             });
-            if (response.ok) { closeModal(); fetchBooks(); }
-            else { alert('Ошибка: ' + await response.text()); }
-        } catch (e) { alert('Ошибка сети'); }
-        finally { saveBtn.disabled = false; saveBtn.textContent = 'Сохранить'; }
+
+            if (response.ok) {
+                hideModal();
+                loadBooks();
+            } else {
+                alert('Ошибка при сохранении книги');
+            }
+        } catch (error) {
+            console.error('Ошибка:', error);
+        }
     };
 
     async function deleteBook(id) {
         if (!confirm('Вы уверены, что хотите удалить эту книгу?')) return;
-        await fetch(`${apiBase}/books/${id}`, {
-            method: 'DELETE',
-            headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') }
-        });
-        fetchBooks();
+        try {
+            const response = await fetch(`/api/admin/books/${id}`, {
+                method: 'DELETE',
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            if (response.ok) {
+                loadBooks();
+            } else {
+                alert('Ошибка при удалении книги');
+            }
+        } catch (error) {
+            console.error('Ошибка при удалении:', error);
+        }
     }
 
-    window.addEventListener('DOMContentLoaded', fetchBooks);
-
-    document.getElementById('searchInput').oninput = async (e) => {
-        const query = e.target.value;
-        if (query.length === 0) { fetchBooks(); return; }
-        if (query.length < 2) return;
-        try {
-            const res = await fetch(`${apiBase}/search/book?title=${encodeURIComponent(query)}`, {
-                headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') }
-            });
-            renderBooks(await res.json());
-        } catch (e) {}
+    window.onload = () => {
+        if (typeof initThemeIcon === 'function') initThemeIcon();
+        loadBooks();
+        loadCategories();
     };
 </script>
 </body>

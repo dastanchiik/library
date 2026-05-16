@@ -23,42 +23,50 @@ public class OrderService {
     private final BookRepository bookRepository;
     private final UserRepository userRepository;
 
+    @Transactional
+    public OrderResponse buyBook(Long userId, Long bookId, int quantity) {
+        if (quantity <= 0) {
+            throw new RuntimeException("Количество должно быть больше нуля");
+        }
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("Пользователь не найден"));
+        Book book = bookRepository.findById(bookId)
+                .orElseThrow(() -> new RuntimeException("Книга не найдена"));
 
-        @Transactional
-        public OrderResponse buyBook(Long userId, Long bookId) {
-            User user = userRepository.findById(userId)
-                    .orElseThrow(() -> new RuntimeException("Пользователь не найден"));
-            Book book = bookRepository.findById(bookId)
-                    .orElseThrow(() -> new RuntimeException("Книга не найдена"));
+        double totalPrice = (book.getPrice() * quantity);
 
-            if (user.getBalance() < book.getPrice()) {
-                throw new RuntimeException("Недостаточно средств");
-            }
-            if (book.getStock() <= 0) {
-                throw new RuntimeException("Книги нет в наличии");
-            }
-
-            book.setSalesCount(book.getSalesCount() + 1);
-            bookRepository.save(book);
-            user.setBalance(user.getBalance() - book.getPrice());
-            book.setStock(book.getStock() - 1);
-
-            Order order = new Order();
-            order.setUser(user);
-            order.setBook(book);
-            order.setOrderDate(LocalDateTime.now());
-            order.setStatus(OrderStatus.PENDING);
-            order.setTotalPrice(book.getPrice());
-            orderRepository.save(order);
-
-            return OrderResponse.fromEntity(order);
+        if (user.getBalance() < totalPrice) {
+            throw new RuntimeException("Недостаточно средств. Нужно: " + totalPrice);
+        }
+        if (book.getStock() < quantity) {
+            throw new RuntimeException("Недостаточно книг на складе. В наличии: " + book.getStock());
         }
 
+        // Обновляем книгу
+        book.setSalesCount(book.getSalesCount() + quantity);
+        book.setStock(book.getStock() - quantity);
+        bookRepository.save(book);
 
+        // Обновляем баланс пользователя
+        user.setBalance(user.getBalance() - totalPrice);
+        userRepository.save(user);
 
-    public List<Order> getUserOrders(Long userId) {
-        return null;
+        // Создаем заказ
+        Order order = new Order();
+        order.setUser(user);
+        order.setBook(book);
+        order.setOrderDate(LocalDateTime.now());
+        order.setStatus(OrderStatus.PENDING);
+        order.setQuantity(quantity);
+        order.setTotalPrice(totalPrice);
+        orderRepository.save(order);
+
+        return OrderResponse.fromEntity(order);
     }
+
+//    public List<Order> getUserOrders(Long userId) {
+//        return orderRepository.findAllByUserId(userId);
+//    }
 
     @Transactional
     public Order deliverOrder(Long orderId) {
@@ -74,17 +82,17 @@ public class OrderService {
     }
 
     public List<OrderResponse> getByIsbn(String isbn) {
-            return orderRepository.findAllByBook_Isbn(isbn)
-                    .stream()
-                    .map(OrderResponse::fromEntity)
-                    .toList();
+        return orderRepository.findAllByBook_Isbn(isbn)
+                .stream()
+                .map(OrderResponse::fromEntity)
+                .toList();
     }
 
     public List<OrderResponse> getByUsername(String username) {
-            return orderRepository.findAllByUser_Username(username)
-                    .stream()
-                    .map(OrderResponse::fromEntity)
-                    .toList();
+        return orderRepository.findAllByUser_Username(username)
+                .stream()
+                .map(OrderResponse::fromEntity)
+                .toList();
     }
 
     public OrderResponse getOrderById(Long id) {

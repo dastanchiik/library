@@ -14,6 +14,7 @@ public class OrderResponse {
     private Long orderId;
     private String bookTitle;
     private Double price;
+    private int quantity;
     private String customerName;
     private String username;
     private LocalDateTime orderDate;
@@ -28,6 +29,7 @@ public class OrderResponse {
         response.setOrderId(order.getId());
         response.setBookTitle(order.getBook().getTitle());
         response.setPrice(order.getBook().getPrice());
+        response.setQuantity(order.getQuantity());
         response.setCustomerName(order.getUser().getFullName());
         response.setUsername(order.getUser().getUsername());
         response.setOrderDate(order.getOrderDate());

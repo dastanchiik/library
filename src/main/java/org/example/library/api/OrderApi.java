@@ -17,8 +17,8 @@ public class OrderApi {
     private final OrderService orderService;
 
     @PostMapping("/buy")
-    public ResponseEntity<OrderResponse> buy(@RequestParam Long userId, @RequestParam Long bookId) {
-        OrderResponse response = orderService.buyBook(userId, bookId);
+    public ResponseEntity<OrderResponse> buy(@RequestParam Long userId, @RequestParam Long bookId, @RequestParam int quantity) {
+        OrderResponse response = orderService.buyBook(userId, bookId,quantity);
         return ResponseEntity.ok(response);
     }
 }
